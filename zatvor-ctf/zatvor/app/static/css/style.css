@@ -1,0 +1,139 @@
+/* Токени. Змінюй тут, щоб перефарбувати весь сайт */
+:root {
+  --paper: #f1f2f1;
+  --ink: #232523;
+  --muted: #6b706b;
+  --line: #cfd2cf;
+  --accent: #2a3fd1;
+
+  --font: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --width: 56rem;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font: 1rem/1.6 var(--font);
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+main, .site-header, .site-footer {
+  width: 100%;
+  max-width: var(--width);
+  margin: 0 auto;
+  padding-inline: 1.5rem;
+}
+
+main { flex: 1; padding-block: 3rem 4rem; }
+
+a { color: inherit; }
+a:focus-visible, input:focus-visible, textarea:focus-visible, button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+/* Шапка */
+.site-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 1rem;
+  padding-block: 1.5rem;
+  border-bottom: 1px solid var(--line);
+}
+.logo { font-size: 1.25rem; font-weight: 700; text-decoration: none; letter-spacing: -0.01em; }
+.search input {
+  width: 12rem;
+  padding: 0.3rem 0;
+  border: 0;
+  border-bottom: 1px solid var(--ink);
+  background: transparent;
+  font: inherit;
+}
+
+/* Заголовки */
+.page-title {
+  margin: 0 0 2rem;
+  font-size: clamp(2rem, 6vw, 3.5rem);
+  line-height: 1.05;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+}
+h2 { font-size: 1.25rem; margin: 0 0 1.5rem; }
+
+/* Каталог */
+.catalog { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--ink); }
+.catalog li { border-bottom: 1px solid var(--line); }
+.catalog a {
+  display: grid;
+  grid-template-columns: 1fr 5rem 7rem;
+  gap: 1rem;
+  padding: 1.1rem 0;
+  text-decoration: none;
+}
+.catalog a:hover .catalog-name { color: var(--accent); }
+.catalog-name { font-size: 1.35rem; font-weight: 500; }
+.catalog-year { color: var(--muted); align-self: center; }
+.catalog-price { text-align: right; align-self: center; font-variant-numeric: tabular-nums; }
+
+/* Сторінка товару */
+.back { color: var(--muted); font-size: 0.9rem; }
+.product { margin-top: 1.5rem; }
+.price { font-size: 1.5rem; margin: 0 0 1.5rem; }
+.lead { max-width: 38rem; }
+.specs {
+  display: grid;
+  grid-template-columns: 8rem 1fr;
+  max-width: 28rem;
+  margin: 2rem 0 0;
+  border-top: 1px solid var(--line);
+}
+.specs dt, .specs dd { margin: 0; padding: 0.5rem 0; border-bottom: 1px solid var(--line); }
+.specs dt { color: var(--muted); }
+
+/* Відгуки */
+.reviews { margin-top: 4rem; max-width: 38rem; }
+.review { padding: 1rem 0; border-top: 1px solid var(--line); }
+.review p { margin: 0; }
+.review-meta { color: var(--muted); font-size: 0.85rem; margin-bottom: 0.25rem !important; }
+.muted { color: var(--muted); }
+
+.review-form { margin-top: 2rem; display: grid; gap: 1rem; }
+.review-form label { display: grid; gap: 0.35rem; font-size: 0.9rem; color: var(--muted); }
+.review-form input, .review-form textarea {
+  padding: 0.6rem;
+  border: 1px solid var(--ink);
+  border-radius: 0;
+  background: #fff;
+  color: var(--ink);
+  font: 1rem var(--font);
+}
+.review-form button {
+  justify-self: start;
+  padding: 0.65rem 1.25rem;
+  border: 0;
+  background: var(--ink);
+  color: var(--paper);
+  font: 500 1rem var(--font);
+  cursor: pointer;
+}
+.review-form button:hover { background: var(--accent); }
+
+/* Футер */
+.site-footer {
+  padding-block: 1.5rem;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+@media (max-width: 36rem) {
+  .catalog a { grid-template-columns: 1fr auto; }
+  .catalog-year { display: none; }
+  .search input { width: 8rem; }
+}

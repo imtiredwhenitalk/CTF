@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1 class="page-title">Камери в наявності</h1>
+
+<ul class="catalog">
+  {% for p in products %}
+  <li>
+    <a href="{{ url_for('shop.product', product_id=p.id) }}">
+      <span class="catalog-name">{{ p.name }}</span>
+      <span class="catalog-year">{{ p.year }}</span>
+      <span class="catalog-price">{{ p.price }} грн</span>
+    </a>
+  </li>
+  {% endfor %}
+</ul>
+{% endblock %}

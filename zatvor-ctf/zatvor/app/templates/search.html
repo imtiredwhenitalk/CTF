@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}Пошук — Затвор{% endblock %}
+
+{% block content %}
+{# VULN: reflected XSS. Запит виводиться без екранування #}
+<h1 class="page-title">Пошук: {{ query|safe }}</h1>
+
+{% if products %}
+<ul class="catalog">
+  {% for p in products %}
+  <li>
+    <a href="{{ url_for('shop.product', product_id=p.id) }}">
+      <span class="catalog-name">{{ p.name }}</span>
+      <span class="catalog-year">{{ p.year }}</span>
+      <span class="catalog-price">{{ p.price }} грн</span>
+    </a>
+  </li>
+  {% endfor %}
+</ul>
+{% else %}
+<p class="muted">Нічого не знайдено. Спробуй назву моделі, наприклад «Зеніт».</p>
+{% endif %}
+{% endblock %}
