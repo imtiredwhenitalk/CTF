@@ -1,0 +1,16 @@
+services:
+  web:
+    build: .
+    ports:
+      - '127.0.0.1:5000:5000'
+    environment:
+      CTF_FLAG: 'CTF{template_preview_is_not_plain_text}'
+      SECRET_KEY: 'replace-this-for-any-shared-deployment'
+      ADMIN_PIN: '4826'
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    read_only: true
+    tmpfs:
+      - /tmp:size=16m
