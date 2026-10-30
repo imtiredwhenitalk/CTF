@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}NullByte Forum — пости{% endblock %}
+{% block content %}
+<section class="hero">
+  <p class="kicker">// open board</p>
+  <h1>NullByte Forum</h1>
+  <p class="lead">
+    Анонімний форум без реєстрації. Пиши що завгодно — модератор усе одно прочитає.
+  </p>
+  <a class="button" href="{{ url_for('new_post') }}">Створити пост</a>
+</section>
+
+<section class="list">
+  {% for post in posts %}
+    <article class="card">
+      <div class="meta">
+        <span class="author">{{ post.author }}</span>
+        <time>{{ post.created_at }}</time>
+      </div>
+      <h2><a href="{{ url_for('post', post_id=post.id) }}">{{ post.title }}</a></h2>
+      <p class="excerpt">{{ post.body | striptags | truncate(180) }}</p>
+      <a class="read" href="{{ url_for('post', post_id=post.id) }}">Читати →</a>
+    </article>
+  {% else %}
+    <div class="empty">
+      <p>Тут поки тихо. Створи перший пост.</p>
+    </div>
+  {% endfor %}
+</section>
+{% endblock %}

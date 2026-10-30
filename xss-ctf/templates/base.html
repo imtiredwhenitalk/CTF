@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="uk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}NullByte Forum{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="{{ url_for('index') }}">
+      <span class="prompt">root@nullbyte:~#</span> forum
+    </a>
+    <nav>
+      <a href="{{ url_for('index') }}">Пости</a>
+      <a href="{{ url_for('new_post') }}">Новий пост</a>
+      {% if session.get('admin') %}
+        <a href="{{ url_for('admin') }}">Адмінка</a>
+        <a href="{{ url_for('logout') }}">Вийти</a>
+      {% else %}
+        <a href="{{ url_for('login') }}">Вхід</a>
+      {% endif %}
+    </nav>
+  </header>
+
+  <main>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div class="flash-stack">
+          {% for category, message in messages %}
+            <div class="flash {{ category }}">{{ message }}</div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer>
+    NullByte Forum · навчальний CTF · <span class="muted">stored XSS + admin bot</span>
+  </footer>
+</body>
+</html>
