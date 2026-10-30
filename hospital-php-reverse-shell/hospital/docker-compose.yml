@@ -1,0 +1,9 @@
+services:
+  hospital:
+    build: .
+    container_name: hospital-ctf
+    ports:
+      - "8080:80"
+    restart: unless-stopped
+    # network_mode: host   # розкоментуйте на Linux, якщо reverse shell
+                            # має стукати на nc, що слухає на хості
