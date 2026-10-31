@@ -1,0 +1,62 @@
+services:
+  ctfd:
+    image: ctfd/ctfd:latest
+    user: root
+    ports:
+      - "8000:8000"
+    environment:
+      - ULOGS=/var/log/CTFd
+      - DATABASE_URL=mysql+pymysql://ctfd:ctfd@db/ctfd
+      - REDIS_URL=redis://cache:6379
+    depends_on:
+      - db
+      - cache
+    restart: always
+
+  db:
+    image: mariadb:10.11
+    environment:
+      - MYSQL_ROOT_PASSWORD=ctfd
+      - MYSQL_USER=ctfd
+      - MYSQL_PASSWORD=ctfd
+      - MYSQL_DATABASE=ctfd
+    volumes:
+      - db_data:/var/lib/mysql
+    restart: always
+
+  cache:
+    image: redis:alpine
+    restart: always
+
+  volyngas_ctf:
+    build: ./challenges/volyngas-ctf
+    ports:
+      - "8081:5000"
+    restart: always
+
+  volynvoda_ctf:
+    build: ./challenges/volyn-voda-ctf
+    ports:
+      - "8082:5000"
+    restart: always
+
+  xss_ctf:
+    build: ./challenges/xss-ctf
+    ports:
+      - "8083:5000"
+    restart: always
+
+  zatvor_ctf:
+    build: ./challenges/zatvor-ctf
+    ports:
+      - "8084:5000"
+    restart: always
+
+  pwn_ctf:
+    build: ./challenges/pwn-ctf
+    ports:
+      - "1337:1337"
+    restart: always
+
+volumes:
+  db_data:
