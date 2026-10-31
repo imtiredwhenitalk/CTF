@@ -1,0 +1,39 @@
+services:
+  portal:
+    build: ./portal
+    ports: ["8080:5000"]
+    environment:
+      - SECRET_KEY=${SECRET_KEY:?Задайте SECRET_KEY у файлі .env}
+      - PUBLIC_HOST=${PUBLIC_HOST:-localhost}
+      - CTF_NAME=Operation Titan CTF
+    volumes:
+      - portal_data:/app/data
+    restart: unless-stopped
+
+  flag1_git_leak:
+    build: ./flag1_git_leak
+    ports: ["8081:80"]
+    restart: unless-stopped
+
+  flag2_jwt_api:
+    build: ./flag2_jwt_api
+    ports: ["8082:3000"]
+    restart: unless-stopped
+
+  flag4_pwn:
+    build: ./flag4_pwn
+    ports: ["1337:1337"]
+    restart: unless-stopped
+
+  flag5_ad_sim:
+    build: ./flag5_ad_sim
+    ports: ["8085:5000"]
+    restart: unless-stopped
+
+  flag7_sqli_web:
+    build: ./flag7_sqli_web
+    ports: ["8087:5000"]
+    restart: unless-stopped
+
+volumes:
+  portal_data:
