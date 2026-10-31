@@ -29,7 +29,7 @@ chmod +x setup.sh
 
 ---
 
-## 🚩 Прапори та відповіді (для організаторів)
+## Прапори та відповіді (для організаторів)
 
 1. `CTF{w3lc0m3_t0_th3_tr1d3nt_n3tw0rk_2026}`
 2. `CTF{jwt_s3cr3ts_sh0uld_n3v3r_b3_w34k}`
@@ -40,7 +40,7 @@ chmod +x setup.sh
 
 ---
 
-## ⚙️ Автоматичне імпортування тасків у CTFd
+## Автоматичне імпортування тасків у CTFd
 Після реєстрації первинного адміна в CTFd (http://localhost:8000) виконайте:
 ```bash
 python3 scripts/populate_ctfd.py --url http://localhost:8000 --token <YOUR_CTFD_API_TOKEN>
