@@ -1,15 +1,18 @@
 # LNTU Local Cyber Range (Університетський CTF ЛНТУ)
 
 Готовий до локального розгортання CTF для студентів та заходів ЛНТУ.
+Включає автоматичну генерацію OpenVPN конфігів для гравців!
 
 ## 🚀 Швидкий запуск
 ```bash
+# Даємо права та запускаємо єдиний скрипт, який зробить ВСЕ
 chmod +x setup.sh
 ./setup.sh
 ```
 
-Після запуску сервіси будуть доступні за адресами:
+Після запуску сервіси будуть доступні:
 - **CTFd Платформа:** http://localhost:8000
+- **VPN Portal (Авто-генератор .ovpn):** http://localhost:5050
 - **Таск 1 (ВолиньГаз CTF - SSTI/Auth):** http://localhost:8081
 - **Таск 2 (ВолиньВода CTF - IDOR/LFI):** http://localhost:8082
 - **Таск 3 (XSS Blog CTF - Stored XSS + Bot):** http://localhost:8083
@@ -24,13 +27,3 @@ chmod +x setup.sh
 3. `CTF{xss_st0r3d_4dm1n_c00k13_st34l}`
 4. `CTF{z4tv0r_sqli_byp4ss_m4st3r}`
 5. `CTF{pwn_lntu_st4ck_0v3rfl0w_r00t}`
-
----
-
-## ⚙️ Автоматичний імпорт у CTFd
-1. Зареєструйте акаунт адміна на `http://localhost:8000`.
-2. В налаштуваннях профілю (Settings -> Access Tokens) згенеруйте API Token.
-3. Виконайте автоматичний імпорт завдань:
-```bash
-python3 scripts/populate_ctfd.py --url http://localhost:8000 --token <YOUR_TOKEN>
-```

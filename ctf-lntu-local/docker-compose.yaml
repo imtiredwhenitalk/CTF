@@ -1,3 +1,5 @@
+version: '3.8'
+
 services:
   ctfd:
     image: ctfd/ctfd:latest
@@ -26,6 +28,28 @@ services:
 
   cache:
     image: redis:alpine
+    restart: always
+
+  openvpn:
+    image: kylemanna/openvpn:latest
+    container_name: openvpn
+    ports:
+      - "1194:1194/udp"
+    volumes:
+      - ./openvpn-data/conf:/etc/openvpn
+    cap_add:
+      - NET_ADMIN
+    restart: always
+
+  vpn_portal:
+    build: ./vpn-portal
+    container_name: vpn_portal
+    ports:
+      - "5050:5050"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    depends_on:
+      - openvpn
     restart: always
 
   volyngas_ctf:
