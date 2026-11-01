@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SECURE COMMS - [ENCRYPTED]</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;700&family=Orbitron:wght@700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Chat Sequence -->
+    <div id="chat-container" class="scene active">
+        <div class="terminal-header">
+            <span>🔴 ENCRYPTED P2P CONNECTION ESTABLISHED</span>
+            <span>IP: SPOOFED</span>
+        </div>
+        <div id="chat-box"></div>
+    </div>
+
+    <!-- Corporate Sequence -->
+    <div id="corp-container" class="scene">
+        <div class="corp-logo">
+            <div class="logo-symbol"></div>
+            <div class="logo-text">BINANCE</div>
+        </div>
+        <div class="corp-slogan">SECURE. GLOBAL. TRUSTED.</div>
+        <div class="glitch-overlay"></div>
+    </div>
+
+    <!-- Action Sequence -->
+    <div id="action-container" class="scene">
+        <div class="hack-title">ВРАЗЛИВІСТЬ ЗНАЙДЕНО (API v3)</div>
+        <div class="hack-subtitle">ЧАС ДО РОТАЦІЇ КЛЮЧІВ: 2 ГОДИНИ</div>
+        <button id="start-btn">ІНІЦІЮВАТИ ВЗЛОМ</button>
+    </div>
+
+    <!-- Countdown Sequence -->
+    <div id="countdown-container" class="scene">
+        <div class="target-info">TARGET: 127.0.0.1:5000 (API GATEWAY)</div>
+        <div id="timer">02:00:00</div>
+        <div class="iframe-wrapper">
+            <iframe src="http://localhost:5000/" frameborder="0"></iframe>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

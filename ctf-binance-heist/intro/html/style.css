@@ -1,0 +1,41 @@
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { background: #000; color: #fff; font-family: 'Fira Code', monospace; overflow: hidden; height: 100vh; }
+
+.scene { display: none; width: 100vw; height: 100vh; flex-direction: column; justify-content: center; align-items: center; position: absolute; top: 0; left: 0; }
+.scene.active { display: flex; }
+
+/* CHAT SCENE */
+#chat-container { justify-content: flex-start; padding: 20px; background: #050505; }
+.terminal-header { width: 100%; border-bottom: 1px solid #333; padding-bottom: 10px; margin-bottom: 20px; display: flex; justify-content: space-between; color: #facc15; font-size: 12px; }
+#chat-box { width: 100%; max-width: 800px; display: flex; flex-direction: column; gap: 15px; }
+.msg { padding: 10px; border-radius: 4px; max-width: 80%; opacity: 0; animation: fadeIn 0.3s forwards; }
+.msg.slurr { background: #1a1a1a; color: #22c55e; align-self: flex-start; border-left: 3px solid #22c55e; }
+.msg.kopiko { background: #1a1a1a; color: #38bdf8; align-self: flex-end; border-right: 3px solid #38bdf8; }
+.sender { font-weight: bold; font-size: 11px; opacity: 0.7; margin-bottom: 4px; }
+
+/* CORP SCENE */
+#corp-container { background: #0b0e11; font-family: 'Orbitron', sans-serif; position: relative; }
+.corp-logo { display: flex; align-items: center; gap: 20px; z-index: 10; transform: scale(1.5); }
+.logo-symbol { width: 50px; height: 50px; background: #fcd535; clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%); }
+.logo-text { font-size: 3rem; color: #fcd535; letter-spacing: 5px; }
+.corp-slogan { margin-top: 20px; font-size: 1rem; color: #848e9c; letter-spacing: 2px; z-index: 10; }
+
+.glitch-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.15), rgba(0, 0, 0, 0.15) 1px, transparent 1px, transparent 2px); pointer-events: none; z-index: 20; display: none; }
+.glitching .glitch-overlay { display: block; animation: scanline 0.5s infinite; }
+
+/* ACTION SCENE */
+#action-container { background: #09090b; }
+.hack-title { color: #ef4444; font-size: 2rem; margin-bottom: 10px; text-shadow: 0 0 10px rgba(239, 68, 68, 0.5); }
+.hack-subtitle { color: #a1a1aa; font-size: 1.2rem; margin-bottom: 40px; }
+#start-btn { background: #ef4444; color: #000; border: none; padding: 15px 40px; font-size: 1.5rem; font-family: 'Fira Code', monospace; font-weight: bold; cursor: pointer; transition: all 0.3s; clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px); }
+#start-btn:hover { background: #f87171; box-shadow: 0 0 20px rgba(239, 68, 68, 0.6); transform: scale(1.05); }
+
+/* COUNTDOWN SCENE */
+#countdown-container { padding: 20px; }
+.target-info { color: #22c55e; font-size: 1rem; margin-bottom: 10px; }
+#timer { font-family: 'Orbitron', sans-serif; font-size: 4rem; color: #ef4444; margin-bottom: 20px; text-shadow: 0 0 15px rgba(239, 68, 68, 0.8); }
+.iframe-wrapper { width: 100%; max-width: 1200px; height: 70vh; border: 1px solid #333; border-radius: 8px; overflow: hidden; box-shadow: 0 0 30px rgba(0,0,0,0.8); }
+iframe { width: 100%; height: 100%; background: #fff; }
+
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes scanline { 0% { transform: translateY(0); } 100% { transform: translateY(100vh); } }
