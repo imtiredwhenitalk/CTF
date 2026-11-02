@@ -32,17 +32,26 @@ def compose_args(args: argparse.Namespace) -> list[str]:
         command.extend(["--profile", "vpn"])
     return command
 
+
+def compose_file_args(args: argparse.Namespace) -> list[str]:
+    if args.backup:
+        return ["-f", "docker-compose.backup.yml"]
+    return []
+
+
 def run(args: argparse.Namespace, *compose_options: str) -> int:
-    command = compose_args(args) + list(compose_options)
+    command = compose_args(args) + compose_file_args(args) + list(compose_options)
     print("$ " + " ".join(command), flush=True)
     return subprocess.run(command, cwd=ROOT, check=False).returncode
 
 def main() -> int:
     parser = argparse.ArgumentParser(description="Run the Operation Titan CTF.")
     parser.add_argument("--vpn", action="store_true", help="Include the optional OpenVPN services.")
+    parser.add_argument("--backup", action="store_true", help="Use the core-services backup compose file.")
     subparsers = parser.add_subparsers(dest="action", required=True)
     subparsers.add_parser("config", help="Validate the Compose configuration.")
     subparsers.add_parser("up", help="Build and start all services.")
+    subparsers.add_parser("all", help="Alias for up; start the complete platform.")
     subparsers.add_parser("flag1", help="Build and start challenge 01 only.")
     subparsers.add_parser("down", help="Stop services without deleting the database.")
     subparsers.add_parser("reset", help="Stop services and delete database volumes.")
@@ -53,7 +62,7 @@ def main() -> int:
     args = parser.parse_args()
     if args.action == "config":
         return run(args, "config", "--quiet")
-    if args.action == "up":
+    if args.action in ("up", "all"):
         return run(args, "up", "-d", "--build", "--remove-orphans")
     if args.action == "flag1":
         result = run(args, "up", "-d", "--build", "flag1_git")

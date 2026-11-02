@@ -27,6 +27,32 @@ py .\titan.py config
 py .\titan.py up
 ```
 
+This starts the complete platform in Docker: CTFd, MariaDB, Redis, the setup
+container, and all ten challenges. OpenVPN is not started in the normal
+profile, so a missing VPN network or PKI cannot stop the CTF.
+
+One-command Windows PowerShell start:
+
+```powershell
+.\setup.ps1
+```
+
+One-command Linux/macOS start:
+
+```bash
+./setup.sh
+```
+
+The v2/core profile is also available when you want to explicitly exclude
+OpenVPN and the VPN portal:
+
+```powershell
+py .\titan.py --backup up
+```
+
+It uses the same CTFd, MariaDB, Redis and ten challenge services as the normal
+launch, but deliberately excludes OpenVPN and the VPN portal.
+
 To run only the first challenge:
 
 ```powershell
@@ -71,6 +97,14 @@ that provisioning is complete.
 
 Use `python titan.py status` and `python titan.py logs ctfd_setup` when
 diagnosing startup.
+
+If CTFd was started with a broken database configuration, recreate its
+database volume once:
+
+```powershell
+py .\titan.py reset
+py .\titan.py up
+```
 
 ## Optional VPN profile
 
