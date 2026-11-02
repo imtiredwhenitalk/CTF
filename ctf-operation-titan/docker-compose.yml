@@ -1,6 +1,28 @@
 version: '3.8'
-
 services:
+  # --- VPN Infrastructure ---
+  openvpn:
+    image: kylemanna/openvpn:latest
+    container_name: openvpn
+    ports:
+      - "1194:1194/udp"
+    volumes:
+      - ./openvpn-data/conf:/etc/openvpn
+    cap_add:
+      - NET_ADMIN
+    restart: always
+
+  vpn_portal:
+    build: ./vpn-portal
+    ports:
+      - "5050:5050"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    depends_on:
+      - openvpn
+    restart: always
+
+  # --- CTFd Infrastructure ---
   ctfd:
     image: ctfd/ctfd:latest
     user: root
@@ -10,6 +32,7 @@ services:
       - ULOGS=/var/log/CTFd
       - DATABASE_URL=mysql+pymysql://ctfd:ctfd@db/ctfd
       - REDIS_URL=redis://cache:6379
+      - SECRET_KEY=titan_super_secret_key
     depends_on:
       - db
       - cache
@@ -30,28 +53,52 @@ services:
     image: redis:alpine
     restart: always
 
-  flag1_web:
-    build: ./challenges/flag1_git_leak
-    ports:
-      - "8081:80"
-    restart: always
+  ctfd_setup:
+    build: ./ctfd-setup
+    depends_on:
+      - ctfd
+    restart: "no"
 
-  flag2_api:
-    build: ./challenges/flag2_jwt_api
-    ports:
-      - "8082:3000"
+  # --- Challenges ---
+  flag1_git:
+    build: ./flag1_git
+    ports: ["8001:80"]
     restart: always
-
-  flag4_pwn:
-    build: ./challenges/flag4_pwn
-    ports:
-      - "1337:1337"
+  flag2_jwt:
+    build: ./flag2_jwt
+    ports: ["8002:5000"]
     restart: always
-
-  flag5_ad_sim:
-    build: ./challenges/flag5_ad_sim
-    ports:
-      - "8085:5000"
+  flag3_lfsr:
+    build: ./flag3_lfsr
+    ports: ["8003:80"]
+    restart: always
+  flag4_pickle:
+    build: ./flag4_pickle
+    ports: ["8004:5000"]
+    restart: always
+  flag5_jwt_rsa:
+    build: ./flag5_jwt_rsa
+    ports: ["8005:5000"]
+    restart: always
+  flag6_ecb:
+    build: ./flag6_ecb
+    ports: ["8006:5000"]
+    restart: always
+  flag7_sqli:
+    build: ./flag7_sqli
+    ports: ["8007:5000"]
+    restart: always
+  flag8_wiener:
+    build: ./flag8_wiener
+    ports: ["8008:80"]
+    restart: always
+  flag9_stego:
+    build: ./flag9_stego
+    ports: ["8009:80"]
+    restart: always
+  flag10_lfi:
+    build: ./flag10_lfi
+    ports: ["8010:5000"]
     restart: always
 
 volumes:

@@ -2,12 +2,40 @@
 import argparse
 import requests
 
-CHALLENGES = [
-    {"name": "01. ВолиньГаз - Витік та Шаблони", "category": "Web / SSTI", "description": "Портал ВолиньГаз має внутрішню вразливість обробки шаблонів. (http://localhost:8081)", "value": 500, "type": "dynamic", "state": "visible"},
-    {"name": "02. ВолиньВода - Прихований обліковий запис", "category": "Web / IDOR & LFI", "description": "Перевірте систему обліку показників ВолиньВода. (http://localhost:8082)", "value": 500, "type": "dynamic", "state": "visible"},
-    {"name": "03. LNTU Cyber Blog - XSS Challenge", "category": "Web / XSS", "description": "Опублікуйте статтю в блозі та викрадіть Cookie адміністратора. (http://localhost:8083)", "value": 500, "type": "dynamic", "state": "visible"},
-    {"name": "04. Магазин Затвор - SQL Injection", "category": "Web / SQLi", "description": "Знайдіть способи обходу фільтрації в пошуку магазину «Затвор». (http://localhost:8084)", "value": 500, "type": "dynamic", "state": "visible"},
-    {"name": "05. LNTU Binary - Stack Overflow", "category": "PWN", "description": "Переповніть буфер сервісу діагностики систем ЛНТУ. (nc localhost 1337)", "value": 500, "type": "dynamic", "state": "visible"}
+[
+  {
+    "name": "01. ВолиньГаз - Витік та Шаблони",
+    "category": "Web / SSTI",
+    "description": "Портал ВолиньГаз має внутрішню вразливість обробки шаблонів. (http://localhost:8081)",
+    "value": 500,
+    "type": "standard",
+    "state": "visible"
+  },
+  {
+    "name": "02. ВолиньВода - Прихований обліковий запис",
+    "category": "Web / IDOR & LFI",
+    "description": "Перевірте систему обліку показників ВолиньВода. (http://localhost:8082)",
+    "value": 500,
+    "type": "standard",
+    "state": "visible"
+  },
+  {
+    "name": "03. LNTU Cyber Blog - XSS Challenge",
+    "category": "Web / XSS",
+    "description": "Опублікуйте статтю в блозі та викрадіть Cookie адміністратора. (http://localhost:8083)",
+    "value": 500,
+    "type": "standard",
+    "state": "visible"
+  },
+  {
+    "name": "04. Магазин Затвор - SQL Injection",
+    "category": "Web / SQLi",
+    "description": "Знайдіть способи обходу фільтрації в пошуку магазину «Затвор». (http://localhost:8084)",
+    "value": 500,
+    "type": "standard",
+    "state": "visible"
+  }
+    
 ]
 
 def main():

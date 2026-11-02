@@ -8,7 +8,7 @@ CHALLENGES = [
         "category": "Web / OSINT",
         "description": "Знайдіть витік первинної інформації на веб-сайті об'єкта ТИТАН (http://localhost:8081).",
         "value": 500,
-        "type": "dynamic",
+        "type": "standard",
         "state": "visible"
     },
     {
@@ -16,7 +16,7 @@ CHALLENGES = [
         "category": "Web / Auth",
         "description": "Отримайте доступ до адміністративної панелі API (http://localhost:8082).",
         "value": 500,
-        "type": "dynamic",
+        "type": "standard",
         "state": "visible"
     },
     {
@@ -24,7 +24,7 @@ CHALLENGES = [
         "category": "Crypto / Reverse",
         "description": "Розшифруйте конфігураційний файл `production.conf.enc` у папці challenges/flag3_crypto_rev/.",
         "value": 500,
-        "type": "dynamic",
+        "type": "standard",
         "state": "visible"
     },
     {
@@ -32,7 +32,7 @@ CHALLENGES = [
         "category": "PWN",
         "description": "Проведіть атаку на сервіс діагностики (nc localhost 1337).",
         "value": 500,
-        "type": "dynamic",
+        "type": "standard",
         "state": "visible"
     },
     {
@@ -40,7 +40,7 @@ CHALLENGES = [
         "category": "Active Directory",
         "description": "Здійсніть атаку Kerberoasting на консолі (http://localhost:8085).",
         "value": 500,
-        "type": "dynamic",
+        "type": "standard",
         "state": "visible"
     },
     {
@@ -48,7 +48,7 @@ CHALLENGES = [
         "category": "Kernel / SCADA",
         "description": "Дослідіть драйвер ядра `scada_driver.c` та витягніть секретний прапор.",
         "value": 500,
-        "type": "dynamic",
+        "type": "standard",
         "state": "visible"
     }
 ]
