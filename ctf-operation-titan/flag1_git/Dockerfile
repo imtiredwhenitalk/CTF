@@ -1,7 +1,7 @@
 FROM nginx:alpine
-RUN apk add --no-cache git python3
+
+RUN apk add --no-cache python3 py3-cryptography
 WORKDIR /usr/share/nginx/html
-COPY index.html .
-COPY generate_git.sh .
-RUN chmod +x generate_git.sh && ./generate_git.sh && rm generate_git.sh
+COPY index.html generate_archive.py ./
+RUN python3 generate_archive.py && rm generate_archive.py
 EXPOSE 80
