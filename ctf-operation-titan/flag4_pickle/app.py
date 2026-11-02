@@ -4,10 +4,29 @@ app = Flask(__name__)
 SECRET = b"titan_weak_key_123"
 
 HTML = '''
-<h2>Titan HR Portal</h2><form method="POST" action="/upload">
-  Signature (SHA256): <input type="text" name="sign"><br>
-  Payload (Base64): <input type="text" name="payload"><br><input type="submit">
-</form><a href="/source">Source</a>
+<!DOCTYPE html>
+<html lang="en">
+<head><title>Titan HR Portal</title><link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"></head>
+<body class="bg-dark text-light"><div class="container mt-5">
+    <div class="card bg-secondary text-light">
+        <div class="card-header"><h4>Employee Portal Sync</h4></div>
+        <div class="card-body">
+            <form method="POST" action="/upload">
+                <div class="mb-3">
+                    <label class="form-label">Signature (SHA256)</label>
+                    <input type="text" class="form-control" name="sign" placeholder="HMAC signature">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Payload (Base64 Pickle)</label>
+                    <input type="text" class="form-control" name="payload" placeholder="Base64 encoded data">
+                </div>
+                <button type="submit" class="btn btn-primary">Sync Profile</button>
+            </form>
+            <br>
+            <a href="/source" class="text-info">View Sync Source Code</a>
+        </div>
+    </div>
+</div></body></html>
 '''
 @app.route('/')
 def index(): return render_template_string(HTML)

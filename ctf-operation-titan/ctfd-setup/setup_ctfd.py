@@ -3,9 +3,17 @@ import requests, time, re
 CTFD_URL = "http://ctfd:8000"
 session = requests.Session()
 
+def get_nonce(html):
+    # Оновлений парсер, який працює з новими версіями CTFd (одинарні та подвійні лапки)
+    match = re.search(r'csrfNonce['"]?\s*:\s*['"]([a-f0-9]+)['"]', html, re.IGNORECASE)
+    if match: return match.group(1)
+    match = re.search(r'name="nonce"\s+value="([^"]+)"', html)
+    if match: return match.group(1)
+    return None
+
 def wait_for_ctfd():
     print("[*] Waiting for CTFd to boot...")
-    for _ in range(60):
+    for _ in range(40):
         try:
             r = session.get(f"{CTFD_URL}/setup")
             if r.status_code == 200:
@@ -13,15 +21,14 @@ def wait_for_ctfd():
                 return r.text
         except requests.exceptions.RequestException:
             pass
-        time.sleep(2)
+        time.sleep(3)
     raise Exception("CTFd timeout")
 
 def do_setup(html):
-    nonce_match = re.search(r'"csrfNonce":\s*"([^"]+)"', html)
-    if not nonce_match:
-        print("Already setup or nonce not found")
+    nonce = get_nonce(html)
+    if not nonce:
+        print("[-] Already setup or nonce not found")
         return False
-    nonce = nonce_match.group(1)
     
     setup_data = {
         "ctf_name": "Operation Titan",
@@ -41,34 +48,26 @@ def do_setup(html):
     print(f"Setup response: {r.status_code}")
     return True
 
-def create_challenge(token, name, category, desc, points, flag):
-    headers = {"Authorization": f"Token {token}", "Content-Type": "application/json"}
-    chal_data = {
-        "name": name, "category": category, "description": desc,
-        "value": points, "type": "standard", "state": "visible"
-    }
-    r = session.post(f"{CTFD_URL}/api/v1/challenges", json=chal_data, headers=headers)
-    if r.status_code != 200: return
-    chal_id = r.json()['data']['id']
-    
-    flag_data = {"challenge_id": chal_id, "content": flag, "type": "static"}
-    session.post(f"{CTFD_URL}/api/v1/flags", json=flag_data, headers=headers)
-    print(f"[+] Created: {name}")
-
 def main():
     html = wait_for_ctfd()
     if do_setup(html):
         print("[*] Generating API Token...")
-        # Login to be sure
-        nonce_match = re.search(r'"csrfNonce":\s*"([^"]+)"', session.get(f"{CTFD_URL}/login").text)
-        session.post(f"{CTFD_URL}/login", data={"name":"admin","password":"admin","nonce":nonce_match.group(1)})
+        # Login
+        login_page = session.get(f"{CTFD_URL}/login").text
+        nonce = get_nonce(login_page)
+        session.post(f"{CTFD_URL}/login", data={"name":"admin","password":"admin","nonce":nonce})
         
         # Get Token
-        nonce_match = re.search(r'"csrfNonce":\s*"([^"]+)"', session.get(f"{CTFD_URL}/settings/tokens").text)
-        r = session.post(f"{CTFD_URL}/api/v1/tokens", json={"expiration":""}, headers={"CSRF-Token": nonce_match.group(1)})
+        token_page = session.get(f"{CTFD_URL}/settings/tokens").text
+        nonce = get_nonce(token_page)
+        r = session.post(f"{CTFD_URL}/api/v1/tokens", json={"expiration":""}, headers={"CSRF-Token": nonce})
+        
+        if r.status_code != 200:
+            print(f"[-] Failed to generate token: {r.text}")
+            return
+            
         token = r.json()['data']['value']
         
-        # Load Challenges
         chals = [
             ("01. Git Leak & XOR", "Crypto/Web", "We leaked the source. Find the flag. (http://localhost:8001)", 100, "CTF{g1t_l34k_4nd_x0r_m4st3r}"),
             ("02. JWT Alg Confusion", "Web", "Exploit JWT algorithm confusion (RS256 to HS256). (http://localhost:8002)", 200, "CTF{jwt_4lg_c0nfus10n_byp4ss}"),
@@ -79,10 +78,17 @@ def main():
             ("07. Blind SQLi WAF", "Web", "Strict WAF. Use blind boolean SQL injection. (http://localhost:8007)", 400, "CTF{bl1nd_sqli_w4f_byp4ss_m4st3r}"),
             ("08. RSA Wiener's Attack", "Crypto", "The private key 'd' is too small. (http://localhost:8008)", 400, "CTF{w13n3r_4tt4ck_d_1s_t00_sm4ll}"),
             ("09. AES Steganography", "Forensics", "The image hides a secret ZIP. Extract and decrypt. (http://localhost:8009)", 300, "CTF{st3g0_4nd_43s_1s_fun}"),
-            ("10. LFI to RCE", "Web", "Exploit Local File Inclusion to read the secret. (http://localhost:8010)", 300, "CTF{lf1_t0_rc3_p01s0n1ng_pr0}"),
+            ("10. LFI to RCE", "Web", "Exploit Local File Inclusion to read the secret. (http://localhost:8010)", 300, "CTF{lf1_t0_rc3_p01s0n1ng_pr0}")
         ]
-        for c in chals:
-            create_challenge(token, c[0], c[1], c[2], c[3], c[4])
+        
+        headers = {"Authorization": f"Token {token}", "Content-Type": "application/json"}
+        for name, cat, desc, pts, flag in chals:
+            c_data = {"name": name, "category": cat, "description": desc, "value": pts, "type": "standard", "state": "visible"}
+            r = session.post(f"{CTFD_URL}/api/v1/challenges", json=c_data, headers=headers)
+            if r.status_code == 200:
+                c_id = r.json()['data']['id']
+                session.post(f"{CTFD_URL}/api/v1/flags", json={"challenge_id": c_id, "content": flag, "type": "static"}, headers=headers)
+                print(f"[+] Created: {name}")
         print("[+] All challenges provisioned!")
 
 if __name__ == '__main__':

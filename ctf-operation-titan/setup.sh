@@ -1,6 +1,6 @@
 #!/bin/bash
 echo "========================================="
-echo "   Operation Titan: Ultimate Deployment  "
+echo "   Operation Titan: Final Deployment     "
 echo "========================================="
 if ! command -v docker &> /dev/null; then
     echo "[!] Docker не знайдено. Встановлюю..."
@@ -17,7 +17,8 @@ if [ ! -f "./openvpn-data/conf/openvpn.conf" ]; then
     docker run -v $(pwd)/openvpn-data/conf:/etc/openvpn -e EASYRSA_BATCH=1 --rm kylemanna/openvpn ovpn_initpki nopass
 fi
 
-echo "[*] Підняття інфраструктури (Це займе кілька хвилин)..."
+echo "[*] Очищення старих контейнерів та запуск (Це займе кілька хвилин)..."
+docker compose down -v
 docker compose up -d --build
 
 echo "========================================="

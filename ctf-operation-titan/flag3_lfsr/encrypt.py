@@ -9,8 +9,6 @@ def lfsr(seed, taps, length):
         state = (state >> 1) | (bit << 15)
     return out
 
-# The 16-bit seed is unknown, but since it's only 16 bits (65536 max), you can brute-force it!
-# Known plaintext attack: The flag starts with "CTF{"
 def encrypt(text, seed):
     bits = lfsr(seed, [0, 2, 3, 5], len(text) * 8)
     res = []
