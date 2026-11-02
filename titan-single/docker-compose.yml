@@ -1,0 +1,12 @@
+services:
+  titan:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      - SECRET_KEY=${SECRET_KEY:-change_me_titan_secret}
+    volumes:
+      - titan_data:/app/data
+    restart: unless-stopped
+volumes:
+  titan_data:
