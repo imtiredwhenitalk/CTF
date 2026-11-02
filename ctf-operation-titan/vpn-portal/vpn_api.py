@@ -12,4 +12,4 @@ def get_vpn():
         subprocess.run(f"docker exec -e EASYRSA_BATCH=1 openvpn easyrsa build-client-full {user} nopass", shell=True)
     res = subprocess.run(f"docker exec openvpn ovpn_getclient {user}", shell=True, capture_output=True, text=True)
     return Response(res.stdout, mimetype="application/x-openvpn-profile", headers={"Content-Disposition": f"attachment;filename={user}.ovpn"})
-if __name__ == '__main__': app.run(host='0.0.0.0', port=5050)
+if __name__ == '__main__': app.run(host='10.10.15.27', port=5050)

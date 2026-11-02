@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}{{ product.name }} — Затвор{% endblock %}
+
+{% block content %}
+<a class="back" href="{{ url_for('shop.index') }}">Усі камери</a>
+
+<article class="product">
+  <h1 class="page-title">{{ product.name }}</h1>
+  <p class="price">{{ product.price }} грн</p>
+  <p class="lead">{{ product.description }}</p>
+
+  <dl class="specs">
+    <dt>Рік</dt><dd>{{ product.year }}</dd>
+    {% for key, value in product.specs.items() %}
+    <dt>{{ key }}</dt><dd>{{ value }}</dd>
+    {% endfor %}
+  </dl>
+</article>
+
+<section class="reviews">
+  <h2>Відгуки</h2>
+
+  {% for r in reviews %}
+  <div class="review">
+    <p class="review-meta">{{ r.author }}, {{ r.created_at[:10] }}</p>
+    {# VULN: stored XSS. Текст відгуку виводиться без екранування #}
+    <p>{{ r.body|safe }}</p>
+  </div>
+  {% else %}
+  <p class="muted">Відгуків ще немає. Напиши перший.</p>
+  {% endfor %}
+
+  <form class="review-form" action="{{ url_for('shop.add_review', product_id=product.id) }}" method="post">
+    <label>Ім'я <input name="author" maxlength="40"></label>
+    <label>Відгук <textarea name="body" rows="4" maxlength="1000" required></textarea></label>
+    <button type="submit">Надіслати відгук</button>
+  </form>
+</section>
+{% endblock %}

@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}Адмінка — NullByte Forum{% endblock %}
+{% block content %}
+<section class="panel">
+  <p class="kicker">// moderation panel</p>
+  <h1>Адмінка</h1>
+
+  <div class="flag-box">
+    <span class="muted">Флаг</span>
+    <code id="flag">{{ flag }}</code>
+  </div>
+
+  <h2>Останні пости</h2>
+  <table>
+    <thead><tr><th>#</th><th>Автор</th><th>Заголовок</th><th>Дата</th></tr></thead>
+    <tbody>
+      {% for post in posts %}
+        <tr>
+          <td>{{ post.id }}</td>
+          <td>{{ post.author }}</td>
+          <td><a href="{{ url_for('post', post_id=post.id) }}">{{ post.title }}</a></td>
+          <td class="muted">{{ post.created_at }}</td>
+        </tr>
+      {% else %}
+        <tr><td colspan="4" class="muted">Постів немає.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <h2>Останні скарги</h2>
+  <ul class="reports">
+    {% for item in reports %}
+      <li>пост #{{ item.post_id }} · {{ item.created_at }}</li>
+    {% else %}
+      <li class="muted">Скарг ще не було.</li>
+    {% endfor %}
+  </ul>
+</section>
+{% endblock %}

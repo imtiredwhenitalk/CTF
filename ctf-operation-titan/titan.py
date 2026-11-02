@@ -9,9 +9,7 @@ import subprocess
 import sys
 from pathlib import Path
 
-
 ROOT = Path(__file__).resolve().parent
-
 
 def docker_command() -> list[str]:
     docker = shutil.which("docker")
@@ -28,19 +26,16 @@ def docker_command() -> list[str]:
         raise SystemExit("Docker Compose v2 is required (try: docker compose version).")
     return [docker, "compose"]
 
-
 def compose_args(args: argparse.Namespace) -> list[str]:
     command = docker_command()
     if args.vpn:
         command.extend(["--profile", "vpn"])
     return command
 
-
 def run(args: argparse.Namespace, *compose_options: str) -> int:
     command = compose_args(args) + list(compose_options)
     print("$ " + " ".join(command), flush=True)
     return subprocess.run(command, cwd=ROOT, check=False).returncode
-
 
 def main() -> int:
     parser = argparse.ArgumentParser(description="Run the Operation Titan CTF.")
@@ -79,7 +74,6 @@ def main() -> int:
     if args.service:
         log_args.append(args.service)
     return run(args, *log_args)
-
 
 if __name__ == "__main__":
     sys.exit(main())

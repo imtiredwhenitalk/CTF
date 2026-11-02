@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="card hero">
+    <h1>[+] {{ ctf_name }}</h1>
+    <p>Мережа «ТИТАН ЕНЕРГО» скомпрометована. Пройдіть шлях від першого сліду до ядра SCADA-системи.</p>
+    <p class="muted">{{ count }} завдань &middot; {{ total }} балів &middot; формат прапора: <code>CTF{...}</code></p>
+    {% if g.user %}
+        <a class="btn" href="{{ url_for('challenges') }}">До завдань</a>
+    {% else %}
+        <a class="btn" href="{{ url_for('register') }}">Зареєструватися</a>
+        <a class="btn alt" href="{{ url_for('login') }}">Увійти</a>
+    {% endif %}
+</div>
+<div class="card">
+    <h2>Правила</h2>
+    <ul>
+        <li>Атакувати можна лише сервіси, вказані в завданнях.</li>
+        <li>Портал змагання, інші учасники та інфраструктура організаторів поза межами.</li>
+        <li>Не діліться прапорами та рішеннями під час змагання.</li>
+        <li>Спроб відправки прапора обмежено: {{ 8 }} на хвилину.</li>
+    </ul>
+</div>
+{% endblock %}

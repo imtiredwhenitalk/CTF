@@ -1,0 +1,10 @@
+.git
+.venv
+.venv-1
+__pycache__
+*.pyc
+data
+solve
+.env
+README.md
+WRITEUP.md

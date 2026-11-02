@@ -1,0 +1,7 @@
+services:
+  shop:
+    build: .
+    ports:
+      - "8080:5000"
+    environment:
+      FLAG: "CTF{xss_in_the_darkroom}"

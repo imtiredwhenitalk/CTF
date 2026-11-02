@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="panel">
+    <div class="eyebrow">СЕРВІС ПОВІДОМЛЕНЬ</div>
+    <h1>Попередній перегляд</h1>
+    <p>Перевірте, як виглядатиме текст повідомлення для абонента.</p>
+
+    <form method="post">
+        <label>
+            Текст повідомлення
+            <textarea name="message" rows="5" maxlength="300">{{ content }}</textarea>
+        </label>
+        <button type="submit">Сформувати перегляд</button>
+    </form>
+
+    {% if output is not none %}
+        <div class="result">
+            <b>Результат</b>
+            <p>{{ output }}</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

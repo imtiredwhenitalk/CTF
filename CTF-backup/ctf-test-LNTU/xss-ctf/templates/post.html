@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}{{ post.title }} — NullByte Forum{% endblock %}
+{% block content %}
+<article class="panel">
+  <p class="kicker">// post #{{ post.id }}</p>
+  <h1>{{ post.title }}</h1>
+  <div class="meta">
+    <span class="author">{{ post.author }}</span>
+    <time>{{ post.created_at }}</time>
+  </div>
+
+  {# CTF: навмисний stored XSS — тіло поста рендериться як HTML. #}
+  <div class="post-body">{{ post.body | safe }}</div>
+
+  <div class="actions">
+    <form method="post" action="{{ url_for('report', post_id=post.id) }}">
+      <button class="button ghost" type="submit">🚩 Поскаржитись модератору</button>
+    </form>
+    <a class="button ghost" href="{{ url_for('index') }}">← Назад</a>
+  </div>
+  <p class="hint">Скарга змусить адміна відкрити цей пост у браузері.</p>
+</article>
+{% endblock %}

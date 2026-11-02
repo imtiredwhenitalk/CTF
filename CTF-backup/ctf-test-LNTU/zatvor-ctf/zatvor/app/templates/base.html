@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="uk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Затвор{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+  <header class="site-header">
+    <a class="logo" href="{{ url_for('shop.index') }}">Затвор</a>
+    <form class="search" action="{{ url_for('shop.search') }}" method="get">
+      <input type="search" name="q" placeholder="Пошук камери" aria-label="Пошук камери">
+    </form>
+  </header>
+
+  <main>{% block content %}{% endblock %}</main>
+
+  <footer class="site-footer">
+    Плівкові камери з майстерні. Кожна перевірена на зйомці.
+  </footer>
+</body>
+</html>
