@@ -59,7 +59,8 @@ services:
       - titan_net
 
   ctfd:
-    image: ctfd/ctfd:latest
+    # Pinned on purpose: ctfd-setup talks to the CTFd 3.8.x API/forms.
+    image: ctfd/ctfd:3.8.9
     ports:
       - "8000:8000"
     environment:
@@ -93,14 +94,14 @@ services:
     depends_on:
       ctfd:
         condition: service_healthy
-    restart: "no"
+    restart: on-failure:3
     networks:
       - titan_net
 
   # --- Challenges ---
-  flag1_git:
-    build: ./flag1_git
-    ports: ["8001:80"]
+  flag1_ssti:
+    build: ./flag1_ssti
+    ports: ["8001:5000"]
     restart: unless-stopped
     networks:
       titan_net:

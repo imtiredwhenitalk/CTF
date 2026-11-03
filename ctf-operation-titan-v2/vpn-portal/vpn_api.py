@@ -33,7 +33,7 @@ PAGE = """
 </table></div></div>
 """
 
-TASKS = [("01", "Git Leak & XOR", "http://172.28.0.11"), ("02", "JWT Alg Confusion", "http://172.28.0.12:5000"),
+TASKS = [("01", "SSTI Comms Console", "http://172.28.0.11:5000"), ("02", "JWT Alg Confusion", "http://172.28.0.12:5000"),
          ("03", "LFSR Reversing", "http://172.28.0.13"), ("04", "Pickle & HMAC", "http://172.28.0.14:5000"),
          ("05", "JWT & RSA", "http://172.28.0.15:5000"), ("06", "AES ECB Block", "http://172.28.0.16:5000"),
          ("07", "Blind SQLi WAF", "http://172.28.0.17:5000"), ("08", "RSA Wiener's Attack", "http://172.28.0.18"),

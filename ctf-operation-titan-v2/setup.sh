@@ -86,7 +86,7 @@ if [ -f ./openvpn-data/conf/ovpn_env.sh ] && ! grep -q "OVPN_SERVER_URL=udp://$P
 fi
 
 echo "[*] Збірка та запуск (кілька хвилин)..."
-$DC up -d --build
+$DC up -d --build --remove-orphans
 
 echo "========================================="
 echo "[+] Запущено. CTFd налаштується автоматично за ~1 хв."
