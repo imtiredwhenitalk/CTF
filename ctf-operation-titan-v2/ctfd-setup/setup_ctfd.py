@@ -1,7 +1,7 @@
 import os, re, sys, time
 import requests
 
-CTFD_URL = os.environ.get("CTFD_URL", "http://ctfd:8000")
+CTFD_URL = os.environ.get("CTFD_URL", "http://127.0.0.1:8000")
 ADMIN_NAME = os.environ.get("ADMIN_NAME", "admin")
 ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "admin")
 ADMIN_EMAIL = os.environ.get("ADMIN_EMAIL", "admin@titan.local")
@@ -27,7 +27,7 @@ def get_nonce(html):
 # (name, category, points, flag, vpn_ip, internal_port, host_port, description)
 CHALLENGES = [
     ("01. Git Leak & XOR", "Crypto/Web", 100, "CTF{g1t_l34k_4nd_x0r_m4st3r}", "172.28.0.11", 80, 8001,
-     "Вузол безпеки Titan розгортають прямо з git-репозиторію. Розробники двічі «прибирали» секрети, але чи справді?"),
+     "We leaked the source. Find the flag."),
     ("02. JWT Alg Confusion", "Web", 200, "CTF{jwt_4lg_c0nfus10n_byp4ss}", "172.28.0.12", 5000, 8002,
      "Exploit JWT algorithm confusion (RS256 to HS256)."),
     ("03. LFSR Reversing", "Crypto", 200, "CTF{lfsr_1s_n0t_s3cur3_3n0ugh}", "172.28.0.13", 80, 8003,
@@ -106,20 +106,15 @@ def main():
         sys.exit("[-] Cannot find CSRF nonce on admin page")
     hdr = {"CSRF-Token": csrf, "Content-Type": "application/json"}
 
-    existing = {c["name"]: c["id"] for c in s.get(f"{CTFD_URL}/api/v1/challenges", timeout=30).json().get("data", [])}
+    existing = {c["name"] for c in s.get(f"{CTFD_URL}/api/v1/challenges", timeout=30).json().get("data", [])}
     errors = 0
     for name, cat, pts, flag, ip, iport, hport, text in CHALLENGES:
+        if name in existing:
+            print(f"[=] Exists: {name}", flush=True)
+            continue
         desc = (f"{text}\n\n"
                 f"**VPN:** http://{ip}{'' if iport == 80 else f':{iport}'}  \n"
                 f"**Direct:** http://{SERVER_HOST}:{hport}")
-        if name in existing:
-            # idempotent refresh: keeps links correct after the server IP changes
-            r = s.patch(f"{CTFD_URL}/api/v1/challenges/{existing[name]}", headers=hdr, timeout=30,
-                        json={"description": desc})
-            ok = r.status_code == 200 and r.json().get("success")
-            print(f"[{'=' if ok else '-'}] Exists, description {'refreshed' if ok else 'NOT refreshed'}: {name}", flush=True)
-            errors += 0 if ok else 1
-            continue
         r = s.post(f"{CTFD_URL}/api/v1/challenges", headers=hdr, timeout=30, json={
             "name": name, "category": cat, "description": desc, "value": pts,
             "type": "standard", "state": "visible"})
