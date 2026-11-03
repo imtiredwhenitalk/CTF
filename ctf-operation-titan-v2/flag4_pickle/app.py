@@ -1,35 +1,36 @@
-from flask import Flask, request, render_template_string
+from flask import Flask, request
 import pickle, base64, hmac, hashlib
+from titan_ui import page
 app = Flask(__name__)
 SECRET = b"titan_weak_key_123"
 
-HTML = '''
-<!DOCTYPE html>
-<html lang="en">
-<head><title>Titan HR Portal</title><link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"></head>
-<body class="bg-dark text-light"><div class="container mt-5">
-    <div class="card bg-secondary text-light">
-        <div class="card-header"><h4>Employee Portal Sync</h4></div>
-        <div class="card-body">
-            <form method="POST" action="/upload">
-                <div class="mb-3">
-                    <label class="form-label">Signature (SHA256)</label>
-                    <input type="text" class="form-control" name="sign" placeholder="HMAC signature">
-                </div>
-                <div class="mb-3">
-                    <label class="form-label">Payload (Base64 Pickle)</label>
-                    <input type="text" class="form-control" name="payload" placeholder="Base64 encoded data">
-                </div>
-                <button type="submit" class="btn btn-primary">Sync Profile</button>
-            </form>
-            <br>
-            <a href="/source" class="text-info">View Sync Source Code</a>
-        </div>
-    </div>
-</div></body></html>
+BODY = '''
+<div class="card"><div class="hd">Синхронізація профілю<span class="sub">POST /upload</span></div><div class="bd">
+  <form method="POST" action="/upload">
+    <div class="field"><label for="sign">Підпис (HMAC-SHA256)</label>
+      <input id="sign" class="input" type="text" name="sign" placeholder="hex-підпис payload" autocomplete="off"></div>
+    <div class="field"><label for="payload">Payload (Base64 Pickle)</label>
+      <input id="payload" class="input" type="text" name="payload" placeholder="base64-дані профілю" autocomplete="off"></div>
+    <div class="row"><button class="btn primary" type="submit">Синхронізувати</button>
+      <a href="/source">Переглянути код синхронізації</a></div>
+  </form>
+</div></div>
 '''
+RESULT = '''
+<div class="card"><div class="hd">Результат</div><div class="bd">
+  <div class="alert {{ kind }}">{{ msg }}</div>
+  <a class="btn" href="/">Назад</a>
+</div></div>
+'''
+
+def view(msg, kind="info", status=200):
+    return page(RESULT, title="HR Portal", heading="Employee Portal Sync", tag="04 · Pickle",
+                node="titan-node-04 · hr-portal", msg=msg, kind=kind), status
+
 @app.route('/')
-def index(): return render_template_string(HTML)
+def index():
+    return page(BODY, title="HR Portal", heading="Employee Portal Sync", tag="04 · Pickle", node="titan-node-04 · hr-portal",
+                lead="Профілі співробітників передаються серіалізованим об'єктом із підписом.")
 
 @app.route('/source')
 def source(): return open(__file__).read(), 200, {'Content-Type': 'text/plain'}
@@ -39,10 +40,10 @@ def upload():
     sign = request.form.get('sign', '')
     payload = request.form.get('payload', '')
     expected_sign = hmac.new(SECRET, payload.encode(), hashlib.sha256).hexdigest()
-    if sign != expected_sign: return "Invalid HMAC signature!"
+    if sign != expected_sign: return view("Invalid HMAC signature!", "bad")
     try:
         obj = pickle.loads(base64.b64decode(payload))
-        return f"Hello, {obj.name}"
-    except Exception as e: return f"Error: {e}"
+        return view(f"Hello, {obj.name}", "ok")
+    except Exception as e: return view(f"Error: {e}", "bad")
 
 if __name__ == '__main__': app.run(host='0.0.0.0', port=5000)

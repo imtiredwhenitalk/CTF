@@ -1,7 +1,8 @@
-from flask import Flask, request, make_response, render_template_string
+from flask import Flask, request, make_response
 from Crypto.Cipher import AES
 from Crypto.Util.Padding import pad, unpad
 import base64, os
+from titan_ui import page
 
 app = Flask(__name__)
 KEY = os.urandom(16)
@@ -15,29 +16,26 @@ def decrypt_cookie(cookie):
     try: return unpad(AES.new(KEY, AES.MODE_ECB).decrypt(base64.b64decode(cookie)), 16).decode()
     except: return ""
 
-HTML = '''
-<!DOCTYPE html>
-<html lang="en">
-<head><title>SCADA Control</title><link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"></head>
-<body class="bg-dark text-light"><div class="container mt-5">
-    <div class="card bg-secondary text-light">
-        <div class="card-header"><h4>SCADA Maintenance Terminal</h4></div>
-        <div class="card-body">
-            {% if msg %}
-                <div class="alert alert-info">{{ msg }}</div>
-            {% endif %}
-            <form method="POST" action="/login">
-                <div class="mb-3">
-                    <label>Operator Name</label>
-                    <input type="text" class="form-control" name="username">
-                </div>
-                <button type="submit" class="btn btn-warning">Generate Session</button>
-            </form>
-            <br><a href="/source" class="text-info">Terminal Source Code</a>
-        </div>
-    </div>
-</div></body></html>
+BODY = '''
+<div class="card"><div class="hd">Сесія оператора<span class="sub">cookie: auth</span></div><div class="bd">
+  {% if msg %}<div class="alert info">{{ msg }}</div>{% endif %}
+  <form method="POST" action="/login">
+    <div class="field"><label for="u">Ім'я оператора</label>
+      <input id="u" class="input" type="text" name="username" autocomplete="off" placeholder="operator"></div>
+    <div class="row"><button class="btn primary" type="submit">Створити сесію</button>
+      <a href="/source">Код терміналу</a></div>
+  </form>
+</div></div>
 '''
+WIN = '''
+<div class="card"><div class="hd">Доступ підтверджено</div><div class="bd">
+  <div class="alert ok"><b>SCADA Overridden!</b> <code>{{ flag }}</code></div>
+</div></div>
+'''
+
+def render(msg=""):
+    return page(BODY, title="SCADA", heading="SCADA Maintenance Terminal", tag="06 · AES-ECB",
+                node="titan-node-06 · scada", lead="Сесія зберігається в зашифрованому cookie.", msg=msg)
 
 @app.route('/')
 def index():
@@ -45,13 +43,15 @@ def index():
     msg = ""
     if cookie:
         data = decrypt_cookie(cookie)
-        if "role=admin" in data: return f"SCADA Overridden! {FLAG}"
+        if "role=admin" in data:
+            return page(WIN, title="SCADA", heading="SCADA Maintenance Terminal", tag="06 · AES-ECB",
+                        node="titan-node-06 · scada", flag=FLAG)
         msg = f"Active session: {data}"
-    return render_template_string(HTML, msg=msg)
+    return render(msg)
 
 @app.route('/login', methods=['POST'])
 def login():
-    resp = make_response(render_template_string(HTML, msg="Session generated. Check your cookies."))
+    resp = make_response(render("Session generated. Check your cookies."))
     resp.set_cookie('auth', encrypt_cookie(request.form.get('username', '').replace(';','').replace('=','')))
     return resp
 

@@ -1,32 +1,27 @@
-from flask import Flask, request, jsonify, render_template_string
+from flask import Flask, request, jsonify
 import jwt
+from titan_ui import page
 app = Flask(__name__)
-JWT_SECRET = "123456" 
-n = 54173879  
+JWT_SECRET = "123456"
+n = 54173879
 e = 65537
 FLAG = "CTF{jwt_cr4ck3d_rs4_f4ct0r3d}"
 encrypted_flag = [pow(ord(c), e, n) for c in FLAG]
 
-HTML = '''
-<!DOCTYPE html>
-<html lang="en">
-<head><title>Titan Executive Portal</title><link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"></head>
-<body class="bg-dark text-light"><div class="container mt-5">
-    <div class="card bg-secondary text-light">
-        <div class="card-header"><h4>Executive Access</h4></div>
-        <div class="card-body">
-            <p>Your current session token:</p>
-            <pre class="bg-dark p-3 text-success rounded">{{ token }}</pre>
-            <p>Send this token in the Authorization header to <code>/admin</code></p>
-        </div>
-    </div>
-</div></body></html>
+BODY = '''
+<div class="card"><div class="hd">Ваш токен сесії<span class="sub">role: guest</span></div><div class="bd">
+  <div style="position:relative"><pre id="tok" class="code has-cp">{{ token }}</pre>
+  <button class="btn sm cp" data-copy="tok">Копіювати</button></div>
+  <p class="muted" style="margin-top:1rem">Надсилайте токен у заголовку <code>Authorization</code> на <code>/admin</code>.</p>
+  <div class="alert warn">Гостьовий токен не дає доступу до виконавчих даних.</div>
+</div></div>
 '''
 
 @app.route('/')
 def index():
     token = jwt.encode({"role": "guest"}, JWT_SECRET, algorithm="HS256")
-    return render_template_string(HTML, token=token)
+    return page(BODY, title="Executive Portal", heading="Executive Access", tag="05 · JWT + RSA",
+                node="titan-node-05 · executive", lead="Закритий розділ для керівництва.", token=token)
 
 @app.route('/admin')
 def admin():

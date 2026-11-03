@@ -1,14 +1,23 @@
-
 <!DOCTYPE html>
-<html lang="en">
-<head><title>Titan Crypto Module</title><link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"></head>
-<body class="bg-dark text-light"><div class="container mt-5">
-    <div class="card bg-secondary text-light">
-        <div class="card-header"><h4>Titan Custom Stream Cipher</h4></div>
-        <div class="card-body">
-            <p>We developed an unbreakable LFSR-based stream cipher.</p>
-            <a href="encrypt.py" class="btn btn-outline-light">Download Source (encrypt.py)</a>
-            <a href="flag.enc" class="btn btn-outline-warning">Download Encrypted Flag</a>
-        </div>
-    </div>
-</div></body></html>
+<html lang="uk"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Crypto Module · Operation Titan</title><link rel="stylesheet" href="/titan.css"></head><body>
+<header class="topbar"><div class="in"><a class="brand" href="/"><svg viewBox="0 0 32 32" fill="none"><path d="M16 2 28 9v14L16 30 4 23V9z" stroke="#86b4d8" stroke-width="2"/><path d="M10 12h12M16 12v11" stroke="#ff7a3d" stroke-width="2.4" stroke-linecap="square"/></svg><span>Operation Titan</span></a>
+<span class="node"><span class="dot"></span>titan-node-03 · crypto</span></div></header>
+<main class="wrap">
+<section class="hero"><span class="tag">03 · LFSR</span><h1>Titan Custom Stream Cipher</h1>
+<p>Власний потоковий шифр на регістрі зсуву. Розробники називають його «непробивним».</p></section>
+<div class="card"><div class="hd">Матеріали<span class="sub">2 файли</span></div><div class="bd">
+<ul class="files">
+ <li><span class="n">encrypt.py</span><span class="d">вихідний код шифру · 657 Б</span><a class="btn sm" href="encrypt.py" download>Завантажити</a></li>
+ <li><span class="n">flag.enc</span><span class="d">зашифрований флаг · 30 Б</span><a class="btn sm primary" href="flag.enc" download>Завантажити</a></li>
+</ul></div></div>
+<div class="card"><div class="hd">Параметри від розробників</div><div class="bd">
+<dl class="kv"><dt>стан регістра</dt><dd>16 біт</dd><dt>відводи (taps)</dt><dd>0, 2, 3, 5</dd><dt>seed</dt><dd>невідомий, секретний</dd></dl>
+<div class="alert warn">Простір можливих seed значень менший, ніж здається авторам шифру.</div>
+</div></div>
+</main>
+<script>
+document.querySelectorAll("[data-copy]").forEach(function(b){b.addEventListener("click",function(){var t=document.getElementById(b.dataset.copy);if(!t)return;
+(navigator.clipboard?navigator.clipboard.writeText(t.innerText):Promise.reject()).then(function(){b.textContent="Скопійовано";setTimeout(function(){b.textContent="Копіювати"},1200)},function(){var r=document.createRange();r.selectNodeContents(t);var s=getSelection();s.removeAllRanges();s.addRange(r)})})});
+</script>
+</body></html>

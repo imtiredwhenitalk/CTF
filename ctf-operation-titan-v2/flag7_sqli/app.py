@@ -1,5 +1,6 @@
-from flask import Flask, request, render_template_string
+from flask import Flask, request
 import sqlite3, re, threading
+from titan_ui import page
 app = Flask(__name__)
 
 def init_db():
@@ -10,37 +11,34 @@ def init_db():
 db = init_db()
 lock = threading.Lock()
 
-HTML = '''
-<!DOCTYPE html>
-<html lang="en">
-<head><title>Titan Staff Directory</title><link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"></head>
-<body class="bg-dark text-light"><div class="container mt-5">
-    <div class="card bg-secondary text-light">
-        <div class="card-header"><h4>Staff Lookup</h4></div>
-        <div class="card-body">
-            <form method="GET">
-                <input type="text" class="form-control" name="id" placeholder="Enter Staff ID (e.g. 1)">
-                <button type="submit" class="btn btn-primary mt-2">Search</button>
-            </form>
-            <div class="mt-3 text-warning">{{ result }}</div>
-        </div>
-    </div>
-</div></body></html>
+BODY = '''
+<div class="card"><div class="hd">Пошук за ID<span class="sub">GET /?id=</span></div><div class="bd">
+  <form method="GET">
+    <div class="field"><label for="id">ID співробітника</label>
+      <input id="id" class="input" type="text" name="id" placeholder="наприклад, 1" autocomplete="off" value="{{ q }}"></div>
+    <button class="btn primary" type="submit">Знайти</button>
+  </form>
+  {% if result %}<div class="alert {{ kind }}">{{ result }}</div>{% endif %}
+</div></div>
 '''
+
+def view(result="", kind="info", q=""):
+    return page(BODY, title="Staff Directory", heading="Staff Lookup", tag="07 · Blind SQLi",
+                node="titan-node-07 · directory", lead="Внутрішній довідник співробітників.", result=result, kind=kind, q=q)
 
 @app.route('/')
 def index():
     uid = request.args.get('id', '')
-    if not uid: return render_template_string(HTML, result="")
-    
+    if not uid: return view()
+
     # Strict WAF
     if re.search(r"[\s=><]|\b(union|or|and)\b", uid, re.IGNORECASE):
-        return render_template_string(HTML, result="WAF Blocked: Malicious input detected!")
+        return view("WAF Blocked: Malicious input detected!", "bad", uid)
     try:
         with lock:
             res = db.execute(f"SELECT username FROM users WHERE id = {uid}").fetchone()
-        msg = "User exists in directory." if res else "User not found."
-        return render_template_string(HTML, result=msg)
-    except: return render_template_string(HTML, result="Database Error.")
+        if res: return view("User exists in directory.", "ok", uid)
+        return view("User not found.", "warn", uid)
+    except: return view("Database Error.", "bad", uid)
 
 if __name__ == '__main__': app.run(host='0.0.0.0', port=5000)

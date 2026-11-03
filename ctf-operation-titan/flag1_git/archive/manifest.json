@@ -1,6 +1,0 @@
-{
-  "service": "ops-archive",
-  "format": "titan aes-cbc envelope",
-  "retention": "90d",
-  "rotation-note": "second fragment: night"
-}

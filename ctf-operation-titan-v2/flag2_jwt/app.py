@@ -1,7 +1,8 @@
-from flask import Flask, request, jsonify, render_template_string
+from flask import Flask, request, jsonify
 import jwt, hmac, hashlib, base64, json
 from cryptography.hazmat.primitives.asymmetric import rsa
 from cryptography.hazmat.primitives import serialization
+from titan_ui import page
 
 app = Flask(__name__)
 private_key = rsa.generate_private_key(public_exponent=65537, key_size=2048)
@@ -9,22 +10,18 @@ public_key = private_key.public_key()
 pem_pub = public_key.public_bytes(encoding=serialization.Encoding.PEM, format=serialization.PublicFormat.SubjectPublicKeyInfo).decode()
 FLAG = "CTF{jwt_4lg_c0nfus10n_byp4ss}"
 
-HTML = '''
-<!DOCTYPE html>
-<html lang="en">
-<head><title>Titan API Auth</title><link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"></head>
-<body class="bg-dark text-light"><div class="container mt-5">
-    <div class="card bg-secondary text-light">
-        <div class="card-header"><h4>API Gateway v2</h4></div>
-        <div class="card-body">
-            <p>Access requires a valid JWT Token.</p>
-            <ul>
-                <li><a href="/pub" class="text-info">Download Public Key</a></li>
-                <li><a href="/flag" class="text-info">Access Admin Panel (Requires Authorization Header)</a></li>
-            </ul>
-        </div>
-    </div>
-</div></body></html>
+BODY = '''
+<div class="card"><div class="hd">Доступ до API<span class="sub">GET /flag</span></div><div class="bd">
+  <p>Адмін-панель приймає лише валідний JWT у заголовку <code>Authorization</code>. Токени підписує сервіс автентифікації Titan; публічний ключ відкритий.</p>
+  <div class="row" style="margin-top:1rem">
+    <a class="btn" href="/pub">Завантажити публічний ключ</a>
+    <a class="btn primary" href="/flag">Відкрити адмін-панель</a>
+  </div>
+</div></div>
+<div class="card"><div class="hd">Приклад запиту</div><div class="bd">
+<pre class="code plain">curl -H "Authorization: &lt;token&gt;" http://&lt;host&gt;/flag</pre>
+<div class="alert info">Вимога до токена: у claims має бути <code>role: admin</code>.</div>
+</div></div>
 '''
 
 def b64d(s):
@@ -46,7 +43,9 @@ def verify_token(token):
     raise ValueError("Unsupported algorithm")
 
 @app.route('/')
-def index(): return render_template_string(HTML)
+def index():
+    return page(BODY, title="API Gateway", heading="API Gateway v2", tag="02 · JWT", node="titan-node-02 · api-gateway",
+                lead="Єдина точка входу до внутрішніх сервісів.")
 
 @app.route('/pub')
 def pub(): return pem_pub, 200, {'Content-Type': 'text/plain'}

@@ -89,7 +89,7 @@ services:
     environment:
       - CTFD_URL=http://ctfd:8000
       - ADMIN_PASSWORD=${ADMIN_PASSWORD:-admin}
-      - SERVER_HOST=${PUBLIC_IP:-localhost}
+      - SERVER_HOST=${PUBLIC_IP:-10.10.15.124}
     depends_on:
       ctfd:
         condition: service_healthy

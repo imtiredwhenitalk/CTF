@@ -1,15 +1,23 @@
-
 <!DOCTYPE html>
-<html lang="en">
-<head><title>Titan Vault Logs</title><link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"></head>
-<body class="bg-dark text-light"><div class="container mt-5">
-    <div class="card bg-secondary text-light">
-        <div class="card-header"><h4>Intercepted RSA Transmission</h4></div>
-        <div class="card-body">
-            <p style="word-break:break-all"><strong>N:</strong> 82673475283958927574285330439159257799055211480733681719590539636377801544588204044516353521050011946024813020876410914559907038360137635336519716916765984182303405429233015838027241293547052848690884300520499975556618640457664059361827744693131275282458070015496341358316221845159514811937721210716252564277</p>
-            <p style="word-break:break-all"><strong>e:</strong> 65816048982056050766200888926928245000701708800643260074909473910923474433748609299287220424200066141607562827027613110695090319324681431886165527031649650783230717069505098326414317097658494877637785137888545256984589197461078484827529902745256271186192647330115115845128509556291836775800647153324309158311</p>
-            <p style="word-break:break-all"><strong>C:</strong> 42319441105245658178994871277375957840111106780145547742929074486602145812957974001916835099439612629986629811183551608700522396531137674911243151800561302558824826680138178392882455045245788503991236273496724958485232684053302601745399928227982982387083297482402228818177967031918021889010374569906337827721</p>
-            <div class="alert alert-info">Intel: The private exponent 'd' is suspiciously small.</div>
-        </div>
-    </div>
-</div></body></html>
+<html lang="uk"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vault Logs · Operation Titan</title><link rel="stylesheet" href="/titan.css"></head><body>
+<header class="topbar"><div class="in"><a class="brand" href="/"><svg viewBox="0 0 32 32" fill="none"><path d="M16 2 28 9v14L16 30 4 23V9z" stroke="#86b4d8" stroke-width="2"/><path d="M10 12h12M16 12v11" stroke="#ff7a3d" stroke-width="2.4" stroke-linecap="square"/></svg><span>Operation Titan</span></a>
+<span class="node"><span class="dot"></span>titan-node-08 · vault</span></div></header>
+<main class="wrap">
+<section class="hero"><span class="tag">08 · RSA</span><h1>Intercepted RSA Transmission</h1>
+<p>Перехоплене повідомлення з сейфа Titan. Параметри відкритого ключа та шифртекст нижче.</p></section>
+<div class="card"><div class="hd">Параметри<span class="sub">intercept.txt</span></div><div class="bd">
+<div style="position:relative"><pre id="p" class="code has-cp">N = 82673475283958927574285330439159257799055211480733681719590539636377801544588204044516353521050011946024813020876410914559907038360137635336519716916765984182303405429233015838027241293547052848690884300520499975556618640457664059361827744693131275282458070015496341358316221845159514811937721210716252564277
+
+e = 65816048982056050766200888926928245000701708800643260074909473910923474433748609299287220424200066141607562827027613110695090319324681431886165527031649650783230717069505098326414317097658494877637785137888545256984589197461078484827529902745256271186192647330115115845128509556291836775800647153324309158311
+
+C = 42319441105245658178994871277375957840111106780145547742929074486602145812957974001916835099439612629986629811183551608700522396531137674911243151800561302558824826680138178392882455045245788503991236273496724958485232684053302601745399928227982982387083297482402228818177967031918021889010374569906337827721</pre><button class="btn sm cp" data-copy="p">Копіювати</button></div>
+<div class="row" style="margin-top:1rem"><a class="btn" href="intercept.txt" download>Завантажити як .txt</a></div>
+<div class="alert info"><b>Розвідка:</b> приватна експонента <code>d</code> підозріло мала.</div>
+</div></div>
+</main>
+<script>
+document.querySelectorAll("[data-copy]").forEach(function(b){b.addEventListener("click",function(){var t=document.getElementById(b.dataset.copy);if(!t)return;
+(navigator.clipboard?navigator.clipboard.writeText(t.innerText):Promise.reject()).then(function(){b.textContent="Скопійовано";setTimeout(function(){b.textContent="Копіювати"},1200)},function(){var r=document.createRange();r.selectNodeContents(t);var s=getSelection();s.removeAllRanges();s.addRange(r)})})});
+</script>
+</body></html>
