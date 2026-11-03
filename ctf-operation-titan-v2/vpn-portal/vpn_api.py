@@ -65,4 +65,4 @@ def get_vpn():
 
 
 if __name__ == "__main__":
-    app.run(host="10.10.15.27", port=5050)
+    app.run(host="10.10.10.10", port=5050)

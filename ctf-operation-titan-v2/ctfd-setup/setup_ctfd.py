@@ -1,11 +1,11 @@
 import os, re, sys, time
 import requests
 
-CTFD_URL = os.environ.get("CTFD_URL", "http://ctfd:8000")
+CTFD_URL = os.environ.get("CTFD_URL", "http://10.10.10.10:8000")
 ADMIN_NAME = os.environ.get("ADMIN_NAME", "admin")
-ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "admin")
-ADMIN_EMAIL = os.environ.get("ADMIN_EMAIL", "admin@example.com")
-SERVER_HOST = os.environ.get("SERVER_HOST", "localhost")
+ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "JetBrainsOperationTitan2026")
+ADMIN_EMAIL = os.environ.get("ADMIN_EMAIL", "admin@titan.local")
+SERVER_HOST = os.environ.get("SERVER_HOST", "10.10.10.10")
 
 s = requests.Session()
 

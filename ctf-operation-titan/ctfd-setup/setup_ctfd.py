@@ -3,7 +3,7 @@ import time
 
 import requests
 
-CTFD_URL = "http://ctfd:8000"
+CTFD_URL = "http://10.10.10.10:8000"
 session = requests.Session()
 
 def get_nonce(html):
@@ -37,7 +37,7 @@ def do_setup(html):
         "ctf_name": "Operation Titan",
         "name": "admin",
         "email": "admin@titan.local",
-        "password": "admin",
+        "password": "JetBrainsOperationTitan2026",
         "user_mode": "users",
         "challenge_visibility": "public",
         "account_visibility": "public",
@@ -60,7 +60,7 @@ def main():
         nonce = get_nonce(login_page)
         login = session.post(
             f"{CTFD_URL}/login",
-            data={"name": "admin", "password": "admin", "nonce": nonce},
+            data={"name": "admin", "password": "JetBrainsOperationTitan2026", "nonce": nonce},
             timeout=15,
         )
         if login.status_code not in (200, 302):
