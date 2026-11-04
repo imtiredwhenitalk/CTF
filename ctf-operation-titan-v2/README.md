@@ -1,6 +1,6 @@
 # Operation Titan 🛡️
 
-CTF-інфраструктура: CTFd + 10 завдань + OpenVPN з порталом для видачі `.ovpn`.
+CTF-інфраструктура: CTFd + 11 завдань + OpenVPN з порталом для видачі `.ovpn`.
 
 ## Запуск
 
@@ -20,8 +20,8 @@ chmod +x setup.sh
 |---|---|
 | CTFd | http://10.10.15.124:8000 (`admin` / `admin`, пароль: `ADMIN_PASSWORD=... ./setup.sh --reset`) |
 | VPN-портал | http://10.10.15.124:5050 |
-| Завдання (напряму) | `http://10.10.15.124:8001` … `:8010` |
-| Завдання (через VPN) | `172.28.0.11` … `172.28.0.20` (завдання 3, 8, 9 — порт 80, решта — 5000) |
+| Завдання (напряму) | `http://10.10.15.124:8001` … `:8011` |
+| Завдання (через VPN) | `172.28.0.11` … `172.28.0.21` (завдання 3, 8, 9, 11 — порт 80, решта — 5000) |
 
 Якщо підмережа `172.28.0.0/24` збігається з вашою — змініть її у `docker-compose.yml`, `setup.sh` і `ctfd-setup/setup_ctfd.py`.
 
@@ -55,6 +55,7 @@ docker compose up -d --force-recreate ctfd_setup
 | 08 | RSA Wiener's Attack | `writeups/08_wiener.md` |
 | 09 | Hidden Archive | `writeups/09_stego.md` |
 | 10 | LFI to RCE | `writeups/10_lfi.md` |
+| 11 | Binance API Heist | `flag11_binance/writeup.md` |
 
 ## Що виправлено
 

@@ -63,7 +63,7 @@ bash tools/sync_ui.sh
 if command -v ufw >/dev/null 2>&1 && sudo ufw status 2>/dev/null | grep -q "Status: active"; then
     echo "[*] ufw активний, відкриваю порти CTF..."
     sudo ufw allow 8000/tcp >/dev/null; sudo ufw allow 5050/tcp >/dev/null
-    sudo ufw allow 8001:8010/tcp >/dev/null; sudo ufw allow 1194/udp >/dev/null
+    sudo ufw allow 8001:8011/tcp >/dev/null; sudo ufw allow 1194/udp >/dev/null
 fi
 
 # --- OpenVPN PKI ---
@@ -93,6 +93,6 @@ echo "[+] Запущено. CTFd налаштується автоматично
 echo "    Прогрес:  $DC logs -f ctfd_setup"
 echo "    CTFd:       http://$PUBLIC_IP:8000   (${ADMIN_NAME:-admin} / ${ADMIN_PASSWORD:-admin})"
 echo "    VPN портал: http://$PUBLIC_IP:5050"
-echo "    Завдання напряму: http://$PUBLIC_IP:8001 ... :8010"
-echo "    Через VPN: 172.28.0.11 ... 172.28.0.20"
+echo "    Завдання напряму: http://$PUBLIC_IP:8001 ... :8011"
+echo "    Через VPN: 172.28.0.11 ... 172.28.0.21"
 echo "========================================="

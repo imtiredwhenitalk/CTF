@@ -1,0 +1,13 @@
+version: '3.8'
+services:
+  intro_ui:
+    build: ./intro
+    ports:
+      - "8080:80"
+    restart: always
+
+  binance_api:
+    build: ./exchange
+    ports:
+      - "5000:5000"
+    restart: always

@@ -169,6 +169,21 @@ services:
     networks:
       titan_net:
         ipv4_address: 172.28.0.20
+  flag11_binance:
+    build: ./flag11_binance/intro
+    ports: ["8011:80"]
+    depends_on:
+      - flag11_binance_api
+    restart: unless-stopped
+    networks:
+      titan_net:
+        ipv4_address: 172.28.0.21
+  flag11_binance_api:
+    build: ./flag11_binance/exchange
+    expose: ["5000"]
+    restart: unless-stopped
+    networks:
+      - titan_net
 
 volumes:
   db_data:
