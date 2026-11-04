@@ -6,6 +6,8 @@ const scenes = {
     countdown: document.getElementById('countdown-container')
 };
 
+const TIMER_STORAGE_KEY = 'titan_flag11_deadline';
+
 const script = [
     { sender: "slurr", text: "kopiko, ти тут?", delay: 1000 },
     { sender: "kopiko", text: "Так. Що трапилось?", delay: 3000 },
@@ -50,31 +52,62 @@ async function runIntro() {
     await new Promise(r => setTimeout(r, 2000));
     scenes.corp.classList.remove('active');
     scenes.action.classList.add('active');
+    resumeSavedTimer();
+}
+
+function getSavedDeadline() {
+    const savedDeadline = Number(localStorage.getItem(TIMER_STORAGE_KEY));
+    if (Number.isFinite(savedDeadline) && savedDeadline > Date.now()) {
+        return savedDeadline;
+    }
+    localStorage.removeItem(TIMER_STORAGE_KEY);
+    return null;
+}
+
+function showCountdown(deadline) {
+    scenes.action.classList.remove('active');
+    scenes.countdown.classList.add('active');
+    startTimer(deadline);
 }
 
 // 3. Action Button
 document.getElementById('start-btn').addEventListener('click', () => {
-    scenes.action.classList.remove('active');
-    scenes.countdown.classList.add('active');
-    startTimer(60 * 60); // 1 hour
+    const savedDeadline = getSavedDeadline();
+    const deadline = savedDeadline || Date.now() + 60 * 60 * 1000;
+    localStorage.setItem(TIMER_STORAGE_KEY, String(deadline));
+    showCountdown(deadline);
 });
 
 // 4. Timer Logic
-function startTimer(duration) {
-    let timer = duration, hours, minutes, seconds;
+function startTimer(deadline) {
     const display = document.getElementById('timer');
-    setInterval(function () {
-        hours = parseInt(timer / 3600, 10);
-        minutes = parseInt((timer % 3600) / 60, 10);
-        seconds = parseInt(timer % 60, 10);
+    const updateTimer = () => {
+        const timer = Math.max(0, Math.ceil((deadline - Date.now()) / 1000));
+        const hours = Math.floor(timer / 3600);
+        const minutes = Math.floor((timer % 3600) / 60);
+        const seconds = timer % 60;
 
-        hours = hours < 10 ? "0" + hours : hours;
-        minutes = minutes < 10 ? "0" + minutes : minutes;
-        seconds = seconds < 10 ? "0" + seconds : seconds;
+        display.textContent =
+            String(hours).padStart(2, '0') + ':' +
+            String(minutes).padStart(2, '0') + ':' +
+            String(seconds).padStart(2, '0');
 
-        display.textContent = hours + ":" + minutes + ":" + seconds;
-        if (--timer < 0) timer = 0;
+        if (timer === 0) {
+            localStorage.removeItem(TIMER_STORAGE_KEY);
+        }
+    };
+
+    updateTimer();
+    setInterval(() => {
+        updateTimer();
     }, 1000);
+}
+
+function resumeSavedTimer() {
+    const savedDeadline = getSavedDeadline();
+    if (savedDeadline) {
+        showCountdown(savedDeadline);
+    }
 }
 
 // Start everything
