@@ -56,7 +56,7 @@ async function runIntro() {
 document.getElementById('start-btn').addEventListener('click', () => {
     scenes.action.classList.remove('active');
     scenes.countdown.classList.add('active');
-    startTimer(2 * 60 * 60); // 2 hours
+    startTimer(60 * 60); // 1 hour
 });
 
 // 4. Timer Logic

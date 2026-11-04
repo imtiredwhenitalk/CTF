@@ -1,3 +1,6 @@
+import hashlib
+import hmac
+
 from flask import Flask, jsonify, request, render_template_string
 
 app = Flask(__name__)
@@ -58,12 +61,11 @@ def debug():
         "encryption": "Fernet (AES-128-CBC)",
         "encrypted_admin_key": "gAAAAABq57o2KZnSXrJWzvTjEdFZEyCJ8YvZKMRpFjiRZAoOnSUxVPO3mRCeUErYq_RqU87FVG72ddxGAt2vIzmjE1BKmmLayzOP5WQMB8tGCOvEyn_VOrI=",
         "target_cold_wallet": WALLET_ID,
-        "hint": "Find the AES master key in the frontend to decrypt the admin_key. Then POST to /api/v3/wallet/withdraw"
+        "hint": "Find the AES master key in the frontend, decrypt the admin_key, then sign the wallet ID before withdrawing."
     })
 
 @app.route('/api/v3/wallet/withdraw', methods=['POST'])
 def withdraw():
-    # Vulnerability: API Auth Bypass (using decrypted key)
     provided_key = request.headers.get('X-API-Key')
     if not provided_key or provided_key != API_KEY:
         return jsonify({"error": "Unauthorized. Invalid or missing X-API-Key header."}), 401
@@ -71,6 +73,15 @@ def withdraw():
     data = request.get_json(silent=True)
     if not data or data.get('wallet_id') != WALLET_ID:
         return jsonify({"error": "Invalid wallet ID specified."}), 400
+
+    provided_signature = request.headers.get('X-API-Signature', '')
+    expected_signature = hmac.new(
+        API_KEY.encode(),
+        WALLET_ID.encode(),
+        hashlib.sha256,
+    ).hexdigest()
+    if not hmac.compare_digest(provided_signature, expected_signature):
+        return jsonify({"error": "Invalid wallet authorization signature."}), 403
 
     return jsonify({
         "success": True,
