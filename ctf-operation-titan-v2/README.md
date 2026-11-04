@@ -37,6 +37,24 @@ docker compose up -d --force-recreate ctfd_setup
 
 - Усі сайти завдань і VPN-портал мають єдиний офлайн-дизайн (`shared/titan.css`, `shared/titan_ui.py`); Bootstrap із CDN більше не потрібен, тож усе працює без інтернету. Після зміни дизайну виконайте `tools/sync_ui.sh` (його ж викликає `setup.sh`).
 - **01 SSTI Comms Console** — завдання повністю замінено (раніше тут був Git Leak & XOR). Flask-консоль підставляє позивний оператора в `render_template_string`, що дає Server-Side Template Injection і читання `/flag.txt`. Розв'язок: `writeups/01_ssti.md`.
+- **06 AES ECB Oracle** — завдання перероблено повністю, бо старий варіант розв'язувався одним запитом до `/source`. Тепер це AES-ECB oracle із випадковим префіксом (0–15 байт, фіксований для процесу) і секретним токеном сховища, який генерується під час старту. Токен треба відновити byte-at-a-time атакою, після чого відкрити сховище через `/unlock`. Прапора в коді немає — він лежить у `/flag.txt`. Розв'язок: `writeups/06_ecb.md`.
+
+## Writeups
+
+Усі розв'язки лежать у `writeups/`:
+
+| # | Завдання | Файл |
+|---|---|---|
+| 01 | SSTI Comms Console | `writeups/01_ssti.md` |
+| 02 | JWT Alg Confusion | `writeups/02_jwt.md` |
+| 03 | LFSR Reversing | `writeups/03_lfsr.md` |
+| 04 | Pickle & HMAC | `writeups/04_pickle.md` |
+| 05 | JWT & RSA | `writeups/05_jwt_rsa.md` |
+| 06 | AES ECB Oracle | `writeups/06_ecb.md` |
+| 07 | Blind SQLi WAF | `writeups/07_sqli.md` |
+| 08 | RSA Wiener's Attack | `writeups/08_wiener.md` |
+| 09 | Hidden Archive | `writeups/09_stego.md` |
+| 10 | LFI to RCE | `writeups/10_lfi.md` |
 
 ## Що виправлено
 

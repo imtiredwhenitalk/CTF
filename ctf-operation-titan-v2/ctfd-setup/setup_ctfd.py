@@ -54,8 +54,8 @@ CHALLENGES = [
      "Bypass weak HMAC to deserialize a payload."),
     ("05. JWT & RSA", "Crypto", 300, "CTF{jwt_cr4ck3d_rs4_f4ct0r3d}", "172.28.0.15", 5000, 8005,
      "Crack the token, then factorize RSA to decrypt the admin flag."),
-    ("06. AES ECB Block", "Crypto", 300, "CTF{43s_3cb_bl0ck_m4n1pul4t10n_m4st3r}", "172.28.0.16", 5000, 8006,
-     "Manipulate the ECB blocks to become admin."),
+    ("06. AES ECB Oracle", "Crypto", 500, "CTF{3cb_byt3_4t_4_t1m3_w1th_r4nd0m_pr3f1x}", "172.28.0.16", 5000, 8006,
+     "The /api/encrypt endpoint encrypts your data with AES-ECB, prepending a random per-instance prefix and appending a secret vault token. Recover the token, then submit it to /unlock."),
     ("07. Blind SQLi WAF", "Web", 400, "CTF{bl1nd_sqli_w4f_byp4ss_m4st3r}", "172.28.0.17", 5000, 8007,
      "Strict WAF. Use blind boolean SQL injection."),
     ("08. RSA Wiener's Attack", "Crypto", 400, "CTF{w13n3r_4tt4ck_d_1s_t00_sm4ll}", "172.28.0.18", 80, 8008,
@@ -70,6 +70,8 @@ CHALLENGES = [
 OBSOLETE_CHALLENGES = {
     "01. Git Leak & XOR",
     "Git Leak & XOR",
+    "06. AES ECB Block",
+    "06. AES ECB",
 }
 
 
