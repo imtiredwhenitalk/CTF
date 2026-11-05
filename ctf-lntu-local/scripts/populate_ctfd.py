@@ -2,7 +2,7 @@
 import argparse
 import requests
 
-[
+CHALLENGES = [
   {
     "name": "01. ВолиньГаз - Витік та Шаблони",
     "category": "Web / SSTI",
@@ -34,8 +34,23 @@ import requests
     "value": 500,
     "type": "standard",
     "state": "visible"
+  },
+  {
+    "name": "05. LNTU Account Recovery - Витік токена",
+    "category": "Web / Authentication",
+    "description": "Знайдіть витік токена відновлення пароля в сервісі акаунтів. (http://localhost:8085)",
+    "value": 500,
+    "type": "standard",
+    "state": "visible"
+  },
+  {
+    "name": "06. Autumn Archive - OSINT & Forensics",
+    "category": "OSINT / Forensics",
+    "description": "Встановіть зв'язок із псевдонімом autumn_fox, а потім дослідіть метадані та хвіст відновленого PNG-артефакту. (http://localhost:8086)",
+    "value": 500,
+    "type": "standard",
+    "state": "visible"
   }
-    
 ]
 
 def main():

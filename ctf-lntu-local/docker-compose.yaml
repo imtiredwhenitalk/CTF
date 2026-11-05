@@ -82,5 +82,17 @@ services:
       - "1337:1337"
     restart: always
 
+  flag5_ctf:
+    build: ./challenges/flag5_ctf
+    ports:
+      - "8085:5000"
+    restart: always
+
+  flag6_ctf:
+    build: ./challenges/flag6_ctf
+    ports:
+      - "8086:5000"
+    restart: always
+
 volumes:
   db_data:

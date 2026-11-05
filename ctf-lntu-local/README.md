@@ -17,7 +17,8 @@ chmod +x setup.sh
 - **Таск 2 (ВолиньВода CTF - IDOR/LFI):** http://localhost:8082
 - **Таск 3 (XSS Blog CTF - Stored XSS + Bot):** http://localhost:8083
 - **Таск 4 (Затвор CTF - SQL Injection/Bypass):** http://localhost:8084
-- **Таск 5 (Buffer Overflow PWN):** `nc localhost 1337`
+- **Таск 5 (Account Recovery - витік токена):** http://localhost:8085
+- **Таск 6 (Autumn Archive - OSINT + Forensics):** http://localhost:8086
 
 ---
 
@@ -26,4 +27,5 @@ chmod +x setup.sh
 2. `CTF{v0lyn_v0d4_1d0r_s3cr3t_fl4g}`
 3. `CTF{xss_st0r3d_4dm1n_c00k13_st34l}`
 4. `CTF{z4tv0r_sqli_byp4ss_m4st3r}`
-5. `CTF{pwn_lntu_st4ck_0v3rfl0w_r00t}`
+5. `CTF{r3s3t_t0k3n_1s_n0t_s3cr3t}`
+6. `CTF{autumn_fox_metadata_tells_the_story}`
