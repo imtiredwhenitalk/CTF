@@ -1,0 +1,13 @@
+# Operation Titan runtime state
+CTFd/data/*
+CTFd/logs/*
+!CTFd/data/.gitkeep
+!CTFd/logs/.gitkeep
+CTFd/openvpn-data/conf/ccd/*.tmp
+CTFd/openvpn-data/conf/ccd/ctfd_*
+CTFd/openvpn-data/conf/openvpn.conf.*.bak
+CTFd/openvpn-data/conf/ovpn_env.sh.*.bak
+
+# Python
+__pycache__/
+*.pyc

@@ -1,0 +1,12 @@
+# Build from the CTFd directory (the watermark module lives next to logger/):
+#   docker build -f logger/dockerfile -t titan-logger .
+#   docker run --rm -v "$PWD/data:/data:ro" -v "$PWD/logs:/logs:ro" titan-logger trace 'CTF{...}'
+FROM python:3.10-slim
+WORKDIR /app
+ENV TITAN_DATA_DIR=/data \
+    TITAN_REGISTRY=/data/user_registry.csv \
+    TITAN_WATERMARK_SECRET_FILE=/data/watermark.key \
+    TITAN_LOG_PATH=/logs/flag_issuance.log
+COPY watermark/watermark.py /app/watermark.py
+COPY logger/logger.py /app/logger.py
+ENTRYPOINT ["python", "logger.py"]

@@ -1,0 +1,153 @@
+# Operation Titan — platform stack (CTFd + VPN + watermark service).
+#
+# Challenges live in ../ctf-operation-titan-v2 and join the external
+# `titan_net` / `titan_internal` networks created here.
+#
+# Start everything from ../ctf-operation-titan-v2/setup.sh (recommended) or:
+#   docker compose up -d --build
+# then start the challenge stack.
+services:
+  # --- VPN ---------------------------------------------------------------
+  # Host networking is intentional: VPN clients must reach 172.28.0.0/24
+  # with their real 10.8.0.x source address so flags can be watermarked.
+  # Do NOT add `-N` / OVPN_NAT=1: NAT would hide the client address.
+  openvpn:
+    image: kylemanna/openvpn:latest
+    container_name: openvpn
+    network_mode: host
+    volumes:
+      - ./openvpn-data/conf:/etc/openvpn
+    cap_add:
+      - NET_ADMIN
+    devices:
+      - /dev/net/tun
+    restart: unless-stopped
+
+  vpn_portal:
+    build: ./vpn-portal
+    container_name: vpn_portal
+    ports:
+      - "5050:5050"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./openvpn-data/conf:/openvpn
+      - ./data:/data
+      - ./logs:/logs
+    environment:
+      - OPENVPN_CONTAINER=openvpn
+      - TITAN_OPENVPN_DIR=/openvpn
+      - TITAN_DATA_DIR=/data
+      - TITAN_REGISTRY=/data/user_registry.csv
+    depends_on:
+      - openvpn
+    restart: unless-stopped
+    networks:
+      titan_net:
+        ipv4_address: 172.28.0.3
+
+  # --- Internal flag service --------------------------------------------
+  # Not exposed to the host or to the VPN. Only CTFd and the LFI challenge
+  # join titan_internal. The HMAC secret stays in ./data/watermark.key.
+  watermark:
+    build: ./watermark
+    container_name: watermark
+    volumes:
+      - ./data:/data
+      - ./logs:/logs
+    environment:
+      - TITAN_DATA_DIR=/data
+      - TITAN_REGISTRY=/data/user_registry.csv
+      - TITAN_WATERMARK_SECRET_FILE=/data/watermark.key
+      - TITAN_LOG_PATH=/logs/flag_issuance.log
+    restart: unless-stopped
+    networks:
+      - titan_internal
+
+  # --- CTFd --------------------------------------------------------------
+  db:
+    image: mariadb:10.11
+    command: [mysqld, --character-set-server=utf8mb4, --collation-server=utf8mb4_unicode_ci, --wait_timeout=28800, --log-warnings=0]
+    environment:
+      - MYSQL_ROOT_PASSWORD=ctfd
+      - MYSQL_USER=ctfd
+      - MYSQL_PASSWORD=ctfd
+      - MYSQL_DATABASE=ctfd
+    volumes:
+      - db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+    restart: unless-stopped
+    networks:
+      - titan_net
+
+  cache:
+    image: redis:alpine
+    restart: unless-stopped
+    networks:
+      - titan_net
+
+  ctfd:
+    # Pinned on purpose: ctfd-setup talks to the CTFd 3.8.x API/forms.
+    image: ctfd/ctfd:3.8.9
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=mysql+pymysql://ctfd:ctfd@db/ctfd
+      - REDIS_URL=redis://cache:6379
+      - SECRET_KEY=${SECRET_KEY:-titan_super_secret_key}
+      - TITAN_WATERMARK_URL=http://watermark:5060
+      - TITAN_CHALLENGE_ID=lfi_challenge
+    volumes:
+      - ctfd_uploads:/var/uploads
+      - ./plugins/watermarked:/opt/CTFd/CTFd/plugins/watermarked:ro
+    depends_on:
+      db:
+        condition: service_healthy
+      cache:
+        condition: service_started
+      watermark:
+        condition: service_started
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/', timeout=5)"]
+      interval: 10s
+      timeout: 10s
+      retries: 30
+      start_period: 20s
+    restart: unless-stopped
+    networks:
+      titan_net:
+        ipv4_address: 172.28.0.10
+      titan_internal: {}
+
+  ctfd_setup:
+    build: ./ctfd-setup
+    environment:
+      - CTFD_URL=http://ctfd:8000
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD:-admin}
+      - SERVER_HOST=${PUBLIC_IP:-10.10.15.124}
+    depends_on:
+      ctfd:
+        condition: service_healthy
+    restart: on-failure:3
+    networks:
+      - titan_net
+
+volumes:
+  db_data:
+  ctfd_uploads:
+
+networks:
+  titan_net:
+    name: titan_net
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.28.0.0/24
+          ip_range: 172.28.0.128/25   # auto-assigned containers; fixed IPs never collide
+  titan_internal:
+    name: titan_internal
+    driver: bridge
+    internal: true

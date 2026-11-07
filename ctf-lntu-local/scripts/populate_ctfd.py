@@ -50,7 +50,16 @@ CHALLENGES = [
     "value": 500,
     "type": "standard",
     "state": "visible"
+  },
+  {
+    "name": "07. Flag8 - CTF",
+    "category": "Web / CTF",
+    "description": "Розв'яжіть цю CTF-виклик",
+    "value": 500,
+    "type": "standard",
+    "state": "visible"
   }
+
 ]
 
 def main():

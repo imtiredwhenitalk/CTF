@@ -15,7 +15,7 @@ declare -x OVPN_EXTRA_SERVER_CONFIG=()
 declare -x OVPN_FRAGMENT=
 declare -x OVPN_KEEPALIVE='10 60'
 declare -x OVPN_MTU=
-declare -x OVPN_NAT=1
+declare -x OVPN_NAT=0
 declare -x OVPN_PORT=1194
 declare -x OVPN_PROTO=udp
 declare -x OVPN_PUSH=([0]="route 172.28.0.0 255.255.255.0")

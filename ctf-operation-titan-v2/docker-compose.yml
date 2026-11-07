@@ -1,104 +1,12 @@
-# Operation Titan. Docker network 172.28.0.0/24 (change here AND in setup.sh if it clashes with your LAN)
+# Operation Titan — challenge stack.
+#
+# The platform (CTFd, OpenVPN, VPN portal, watermark service) lives in
+# ../CTFd and must be started first.  This file only builds the challenge
+# containers and joins the external networks created by the platform.
+#
+#   ../CTFd/setup.sh          # platform first
+#   ./setup.sh                # then this stack (wrapper does both)
 services:
-  # --- VPN ---
-  openvpn:
-    image: kylemanna/openvpn:latest
-    container_name: openvpn
-    ports:
-      - "1194:1194/udp"
-    volumes:
-      - ./openvpn-data/conf:/etc/openvpn
-    cap_add:
-      - NET_ADMIN
-    devices:
-      - /dev/net/tun
-    sysctls:
-      - net.ipv4.ip_forward=1
-    restart: unless-stopped
-    networks:
-      titan_net:
-        ipv4_address: 172.28.0.2
-
-  vpn_portal:
-    build: ./vpn-portal
-    ports:
-      - "5050:5050"
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-    depends_on:
-      - openvpn
-    restart: unless-stopped
-    networks:
-      titan_net:
-        ipv4_address: 172.28.0.3
-
-  # --- CTFd ---
-  db:
-    image: mariadb:10.11
-    command: [mysqld, --character-set-server=utf8mb4, --collation-server=utf8mb4_unicode_ci, --wait_timeout=28800, --log-warnings=0]
-    environment:
-      - MYSQL_ROOT_PASSWORD=ctfd
-      - MYSQL_USER=ctfd
-      - MYSQL_PASSWORD=ctfd
-      - MYSQL_DATABASE=ctfd
-    volumes:
-      - db_data:/var/lib/mysql
-    healthcheck:
-      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
-      interval: 5s
-      timeout: 5s
-      retries: 30
-    restart: unless-stopped
-    networks:
-      - titan_net
-
-  cache:
-    image: redis:alpine
-    restart: unless-stopped
-    networks:
-      - titan_net
-
-  ctfd:
-    # Pinned on purpose: ctfd-setup talks to the CTFd 3.8.x API/forms.
-    image: ctfd/ctfd:3.8.9
-    ports:
-      - "8000:8000"
-    environment:
-      - DATABASE_URL=mysql+pymysql://ctfd:ctfd@db/ctfd
-      - REDIS_URL=redis://cache:6379
-      - SECRET_KEY=${SECRET_KEY:-titan_super_secret_key}
-    volumes:
-      - ctfd_uploads:/var/uploads
-    depends_on:
-      db:
-        condition: service_healthy
-      cache:
-        condition: service_started
-    healthcheck:
-      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/', timeout=5)"]
-      interval: 10s
-      timeout: 10s
-      retries: 30
-      start_period: 20s
-    restart: unless-stopped
-    networks:
-      titan_net:
-        ipv4_address: 172.28.0.10
-
-  ctfd_setup:
-    build: ./ctfd-setup
-    environment:
-      - CTFD_URL=http://ctfd:8000
-      - ADMIN_PASSWORD=${ADMIN_PASSWORD:-admin}
-      - SERVER_HOST=${PUBLIC_IP:-10.10.15.124}
-    depends_on:
-      ctfd:
-        condition: service_healthy
-    restart: on-failure:3
-    networks:
-      - titan_net
-
-  # --- Challenges ---
   flag1_ssti:
     build: ./flag1_ssti
     ports: ["8001:5000"]
@@ -165,10 +73,14 @@ services:
   flag10_lfi:
     build: ./flag10_lfi
     ports: ["8010:5000"]
+    environment:
+      - TITAN_WATERMARK_URL=http://watermark:5060
+      - TITAN_CHALLENGE_ID=lfi_challenge
     restart: unless-stopped
     networks:
       titan_net:
         ipv4_address: 172.28.0.20
+      titan_internal: {}
   flag11_binance:
     build: ./flag11_binance/intro
     ports: ["8011:80"]
@@ -184,15 +96,23 @@ services:
     restart: unless-stopped
     networks:
       - titan_net
+  flag12_tokengate:
+    build: ./flag12_tokengate
+    ports: ["8012:5000"]
+    volumes:
+      - tokengate_data:/app/data
+    restart: unless-stopped
+    networks:
+      titan_net:
+        ipv4_address: 172.28.0.22
 
 volumes:
-  db_data:
-  ctfd_uploads:
+  tokengate_data:
 
 networks:
   titan_net:
-    driver: bridge
-    ipam:
-      config:
-        - subnet: 172.28.0.0/24
-          ip_range: 172.28.0.128/25   # auto-assigned containers; fixed IPs above never collide
+    external: true
+    name: titan_net
+  titan_internal:
+    external: true
+    name: titan_internal
