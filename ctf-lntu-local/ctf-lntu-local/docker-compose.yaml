@@ -1,0 +1,173 @@
+services:
+  ctfd:
+    image: ctfd/ctfd:latest
+    user: root
+    ports:
+      - "8000:8000"
+    environment:
+      - UPLOAD_FOLDER=/var/uploads
+      - DATABASE_URL=mysql+pymysql://ctfd:ctfd@db/ctfd
+      - REDIS_URL=redis://cache:6379
+      - WORKERS=2
+      - LOG_FOLDER=/var/log/CTFd
+      - ACCESS_LOG=-
+      - ERROR_LOG=-
+      - REVERSE_PROXY=false
+    volumes:
+      - ctfd_uploads:/var/uploads
+    depends_on:
+      - db
+      - cache
+    restart: always
+
+  db:
+    image: mariadb:10.11
+    environment:
+      - MYSQL_ROOT_PASSWORD=ctfd
+      - MYSQL_USER=ctfd
+      - MYSQL_PASSWORD=ctfd
+      - MYSQL_DATABASE=ctfd
+    volumes:
+      - db_data:/var/lib/mysql
+    restart: always
+
+  cache:
+    image: redis:alpine
+    restart: always
+
+  # OpenVPN вмикається лише профілем "vpn" (./ctf.sh vpn-up). Спершу: ./ctf.sh vpn-init
+  openvpn:
+    image: kylemanna/openvpn
+    container_name: openvpn
+    profiles: ["vpn"]
+    cap_add:
+      - NET_ADMIN
+    ports:
+      - "1194:1194/udp"
+    volumes:
+      - ./openvpn-data/conf:/etc/openvpn
+    restart: always
+
+  flag1_ctf:  # 01. ВолиньГаз (SSTI)
+    build:
+      context: ./challenges
+      dockerfile: flag1_ctf/Dockerfile
+    ports:
+      - "8081:5000"
+    restart: always
+
+  flag2_ctf:  # 02. ВолиньВода (IDOR)
+    build:
+      context: ./challenges
+      dockerfile: flag2_ctf/Dockerfile
+    ports:
+      - "8082:5000"
+    restart: always
+
+  flag3_ctf:  # 03. XSS-блог + адмін-бот
+    build:
+      context: ./challenges
+      dockerfile: flag3_ctf/Dockerfile
+    ports:
+      - "8083:5000"
+    restart: always
+
+  flag4_ctf:  # 04. Затвор (SQLi)
+    build:
+      context: ./challenges
+      dockerfile: flag4_ctf/Dockerfile
+    ports:
+      - "8084:5000"
+    restart: always
+
+  flag5_ctf:  # 05. Account Recovery
+    build:
+      context: ./challenges
+      dockerfile: flag5_ctf/Dockerfile
+    ports:
+      - "8085:5000"
+    restart: always
+
+  flag6_ctf:  # 06. Autumn Archive
+    build:
+      context: ./challenges
+      dockerfile: flag6_ctf/Dockerfile
+    ports:
+      - "8086:5000"
+    restart: always
+
+  flag7_ctf:  # 07. Деканат (cookie)
+    build:
+      context: ./challenges
+      dockerfile: flag7_ctf/Dockerfile
+    ports:
+      - "8087:5000"
+    restart: always
+
+  flag8_ctf:  # 08. Бібліотека API (JWT)
+    build:
+      context: ./challenges
+      dockerfile: flag8_ctf/Dockerfile
+    ports:
+      - "8088:5000"
+    restart: always
+
+  flag9_ctf:  # 09. Е-Архів (LFI)
+    build:
+      context: ./challenges
+      dockerfile: flag9_ctf/Dockerfile
+    ports:
+      - "8089:5000"
+    restart: always
+
+  flag10_ctf:  # 10. NOC (command injection)
+    build:
+      context: ./challenges
+      dockerfile: flag10_ctf/Dockerfile
+    ports:
+      - "8090:5000"
+    restart: always
+
+  flag11_ctf:  # 11. ВолиньОбленерго (robots)
+    build:
+      context: ./challenges
+      dockerfile: flag11_ctf/Dockerfile
+    ports:
+      - "8091:5000"
+    restart: always
+
+  flag12_ctf:  # 12. SIGINT (кодування)
+    build:
+      context: ./challenges
+      dockerfile: flag12_ctf/Dockerfile
+    ports:
+      - "8092:5000"
+    restart: always
+
+  flag13_ctf:  # 13. Intranet (заголовки)
+    build:
+      context: ./challenges
+      dockerfile: flag13_ctf/Dockerfile
+    ports:
+      - "8093:5000"
+    restart: always
+
+  flag14_ctf:  # 14. Фотоархів (stego)
+    build:
+      context: ./challenges
+      dockerfile: flag14_ctf/Dockerfile
+    ports:
+      - "8094:5000"
+    restart: always
+
+  flag15_ctf:  # 15. LinkPreview (SSRF)
+    build:
+      context: ./challenges
+      dockerfile: flag15_ctf/Dockerfile
+    ports:
+      - "8095:5000"
+    restart: always
+
+volumes:
+  db_data:
+  ctfd_uploads:
