@@ -77,6 +77,13 @@ OBSOLETE_CHALLENGES = {
 }
 
 
+# Challenge 10 uses the plugin's dynamic flag type.  The placeholder
+# is stored in CTFd, but the accepted value comes from watermark.
+WATERMARKED_CHALLENGES = {
+    "10. LFI to RCE": ("lfi_challenge", "CTF{watermarked_flag}"),
+}
+
+
 def wait_for_ctfd():
     print("[*] Waiting for CTFd to boot...", flush=True)
     for _ in range(150):
@@ -258,24 +265,24 @@ def delete_obsolete(existing):
     return failures
 
 
-def ensure_flag(challenge_id, flag):
+def ensure_flag(challenge_id, flag, flag_type="static", flag_data=""):
     response, payload = api("GET", f"/api/v1/challenges/{challenge_id}/flags")
     if not api_ok(response, payload):
         return False, f"HTTP {response.status_code} {response.text[:200]}"
 
     flags = payload.get("data", [])
-    flag_data = {
+    payload_data = {
         "challenge_id": challenge_id,
         "content": flag,
-        "type": "static",
-        "data": "",
+        "type": flag_type,
+        "data": flag_data,
     }
     if flags:
         flag_id = flags[0]["id"]
         response, payload = api("PATCH", f"/api/v1/flags/{flag_id}",
-                                json={"content": flag, "type": "static", "data": ""})
+                                json={"content": flag, "type": flag_type, "data": flag_data})
     else:
-        response, payload = api("POST", "/api/v1/flags", json=flag_data)
+        response, payload = api("POST", "/api/v1/flags", json=payload_data)
 
     if not api_ok(response, payload):
         return False, f"HTTP {response.status_code} {response.text[:200]}"
@@ -327,7 +334,17 @@ def main():
                 continue
             action = "Updated"
 
-        ok, error = ensure_flag(challenge_id, flag)
+        if name in WATERMARKED_CHALLENGES:
+            watermark_challenge, watermark_placeholder = WATERMARKED_CHALLENGES[name]
+            flag_type = "watermarked"
+            flag_value = watermark_placeholder
+            flag_data = watermark_challenge
+        else:
+            flag_type = "static"
+            flag_value = flag
+            flag_data = ""
+
+        ok, error = ensure_flag(challenge_id, flag_value, flag_type, flag_data)
         if not ok:
             print(f"[-] Flag for '{name}' failed: {error}", flush=True)
             errors += 1
@@ -354,8 +371,16 @@ def verify_provisioning():
             continue
 
         response, payload = api("GET", f"/api/v1/challenges/{challenge_id}/flags")
-        contents = {item.get("content") for item in payload.get("data", [])}
-        if not api_ok(response, payload) or flag not in contents:
+        flags = payload.get("data", []) if isinstance(payload, dict) else []
+        if name in WATERMARKED_CHALLENGES:
+            challenge_key = WATERMARKED_CHALLENGES[name][0]
+            valid = any(
+                item.get("type") == "watermarked" and item.get("data") == challenge_key
+                for item in flags
+            )
+        else:
+            valid = flag in {item.get("content") for item in flags}
+        if not api_ok(response, payload) or not valid:
             print(f"[-] Verification failed: flag for '{name}' is missing", flush=True)
             errors += 1
 

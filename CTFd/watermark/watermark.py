@@ -7,8 +7,8 @@ be reachable through LFI/RCE.
 
 Registry format (written by vpn-portal/vpn_api.py)::
 
-    nickname,common_name,vpn_ip
-    shadow_hunter42,ctfd_shadow_hunter42_1a2b3c4d,10.8.0.10
+    team,common_name,vpn_ip
+    team-alpha,ctfd_team_alpha_1a2b3c4d,10.8.0.10
 
 Flags look like::
 
@@ -101,7 +101,7 @@ def load_registry() -> dict[str, str]:
             for row in csv.reader(handle):
                 if not row or row[0].strip().startswith("#"):
                     continue
-                if row[0].strip().lower() == "nickname":  # optional header
+                if row[0].strip().lower() in {"nickname", "team"}:  # optional header
                     continue
                 if len(row) < 3:
                     continue

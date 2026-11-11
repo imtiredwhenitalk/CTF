@@ -72,6 +72,22 @@ chmod 0644 data/user_registry.csv
 chmod 0777 logs
 touch logs/flag_issuance.log
 chmod 0666 logs/flag_issuance.log
+# --- VPN portal team credentials ----------------------------------------
+# Passwords are stored as PBKDF2 hashes.  Create/reset team accounts with:
+#   sudo python3 vpn-portal/admin_teams.py add <team>
+if [ ! -f data/team_credentials.json ]; then
+    printf '{\n  "version": 1,\n  "teams": {}\n}\n' > data/team_credentials.json
+fi
+chmod 0600 data/team_credentials.json
+if [ ! -f data/portal_secret.key ]; then
+    if command -v python3 >/dev/null 2>&1; then
+        python3 -c 'import secrets; print(secrets.token_hex(32))' > data/portal_secret.key
+    else
+        openssl rand -hex 32 > data/portal_secret.key
+    fi
+fi
+chmod 0600 data/portal_secret.key
+
 
 # --- OpenVPN PKI ---------------------------------------------------------
 if [ ! -f openvpn-data/conf/openvpn.conf ] || [ ! -f openvpn-data/conf/pki/ca.crt ]; then
@@ -99,11 +115,24 @@ if [ -f "$CONF" ]; then
     grep -qE '^ifconfig-pool[[:space:]]' "$CONF" || echo "ifconfig-pool 10.8.0.2 10.8.0.9" >> "$CONF"
     grep -qE '^client-config-dir[[:space:]]' "$CONF" || echo "client-config-dir /etc/openvpn/ccd" >> "$CONF"
 fi
+# OpenVPN 2.7: explicit ifconfig-pool requires nopool on the server line.
+sed -i -E 's/^server([[:space:]]+[^[:space:]]+[[:space:]]+[^[:space:]]+)[[:space:]]*$/server\1 nopool/' "$CONF" 
+
 mkdir -p openvpn-data/conf/ccd
 
 if [ -f openvpn-data/conf/ovpn_env.sh ]; then
     sed -i 's/^declare -x OVPN_NAT=.*/declare -x OVPN_NAT=0/' openvpn-data/conf/ovpn_env.sh
     sed -i "s#^declare -x OVPN_SERVER_URL=.*#declare -x OVPN_SERVER_URL=udp://$PUBLIC_IP:1194#" openvpn-data/conf/ovpn_env.sh
+fi
+
+# OpenVPN 2.7 + DCO: compression is not allowed.  kylemanna's
+# ovpn_genconfig writes "comp-lzo no" and push "comp-lzo no" when
+# OVPN_COMP_LZO=0; strip both so modern clients can connect.
+if [ -f "$CONF" ]; then
+    sed -i -E '/^[[:space:]]*comp-lzo([[:space:]]|$)/d; /^[[:space:]]*compress([[:space:]]|$)/d; /^[[:space:]]*push[[:space:]]+"comp-lzo/d; /^[[:space:]]*push[[:space:]]+"compress/d' "$CONF"
+fi
+if [ -f openvpn-data/conf/ovpn_env.sh ]; then
+    sed -i -E 's/^declare -x OVPN_COMP_LZO=.*/declare -x OVPN_COMP_LZO=""/' openvpn-data/conf/ovpn_env.sh
 fi
 
 # --- routing / firewall --------------------------------------------------
@@ -141,10 +170,14 @@ fi
 echo "[*] Збірка та запуск платформи..."
 $DC up -d --build --remove-orphans
 
+# Re-apply OpenVPN config fixes to an already-running container.
+$D restart openvpn >/dev/null 2>&1 || true
+
 echo "========================================="
 echo "[+] Платформа запущена."
 echo "    CTFd:        http://$PUBLIC_IP:8000   (${ADMIN_NAME:-admin} / ${ADMIN_PASSWORD:-admin})"
 echo "    VPN портал:  http://$PUBLIC_IP:5050"
 echo "    Watermark:   внутрішній http://watermark:5060 (лише titan_internal)"
+echo "    Команди:     sudo python3 vpn-portal/admin_teams.py add <team>"
 echo "    Далі:        ../ctf-operation-titan-v2/setup.sh"
 echo "========================================="
