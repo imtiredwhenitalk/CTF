@@ -11,7 +11,7 @@ declare -x OVPN_DNS=0
 declare -x OVPN_DNS_SERVERS=([0]="8.8.8.8" [1]="8.8.4.4")
 declare -x OVPN_ENV=/etc/openvpn/ovpn_env.sh
 declare -x OVPN_EXTRA_CLIENT_CONFIG=()
-declare -x OVPN_EXTRA_SERVER_CONFIG=()
+declare -x OVPN_EXTRA_SERVER_CONFIG=([0]="topology subnet" [1]="ifconfig-pool 10.8.0.2 10.8.0.9")
 declare -x OVPN_FRAGMENT=
 declare -x OVPN_KEEPALIVE='10 60'
 declare -x OVPN_MTU=
