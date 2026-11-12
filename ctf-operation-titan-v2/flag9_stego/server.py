@@ -17,10 +17,15 @@ PAGE = f'''<!DOCTYPE html><html lang="uk"><head><meta charset="utf-8">
 <div class="grid">
  <div class="card"><div class="hd">Актив<span class="sub">image.png</span></div><div class="bd">
    <img class="px" src="image.png" alt="encrypted asset preview">
-   <div class="row" style="margin-top:1rem"><a class="btn primary" href="image.png" download>Завантажити актив</a></div></div></div>
+   <div class="row" style="margin-top:1rem">
+     <a class="btn primary" href="image.png" download>Завантажити актив</a>
+     <a class="btn" href="image_old.png" download>Архів 2021</a>
+     <a class="btn" href="notes.txt">Нотатки міграції</a>
+   </div></div></div>
  <div class="card"><div class="hd">Нотатка архіваріуса</div><div class="bd">
    <div class="alert info">Пароль до вкладення: <code>titan</code></div>
-   <p class="muted">Зображення — лише контейнер. Подивіться, що лежить після його кінця.</p></div></div>
+   <p class="muted">Зображення — лише контейнер. Подивіться, що лежить після його кінця.</p>
+   <div class="alert warn">У архіві є копія 2021 року. Її вміст уже ротували — не переплутайте з поточним активом.</div></div></div>
 </div></main></body></html>'''.encode("utf-8")
 
 

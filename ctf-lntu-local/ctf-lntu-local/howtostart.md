@@ -8,7 +8,7 @@ Ubuntu 22.04+ / Debian 12 / Kali / WSL2, `docker` + `docker compose` (встан
 | Дія | Команда |
 |-----|---------|
 | Перший запуск | `./ctf.sh setup` |
-| Додати таски в CTFd | `./ctf.sh populate <TOKEN>` |
+| Додати/оновити таски в CTFd | `./ctf.sh populate <TOKEN>` |
 | Перевірка всіх тасків | `./ctf.sh check` |
 | Стан / логи | `./ctf.sh status` · `./ctf.sh logs flag3_ctf` |
 | Перезапуск одного таска | `./ctf.sh restart flag3_ctf` |

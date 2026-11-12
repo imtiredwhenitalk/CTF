@@ -4,13 +4,14 @@ set -euo pipefail
 cd "$(dirname "$0")"
 
 DC="docker compose"
-CTFD_URL="${CTFD_URL:-http://localhost:8000}"
 
 detect_ip() {
   # IP, який побачать гравці: перший не-loopback адрес хоста
   ip -4 route get 1.1.1.1 2>/dev/null | awk '{for(i=1;i<=NF;i++) if($i=="src") print $(i+1)}' | head -1 || true
 }
 HOST_IP="${CTF_HOST:-$(detect_ip)}"; HOST_IP="${HOST_IP:-localhost}"
+# За замовчуванням керуємо CTFd через IP, який бачать гравці, а не через localhost.
+CTFD_URL="${CTFD_URL:-http://$HOST_IP:8000}"
 
 need_docker() {
   if ! command -v docker >/dev/null; then
@@ -33,7 +34,7 @@ usage() {
   rebuild <сервіс>       перебудувати та перезапустити один таск
   status                 стан контейнерів
   logs [сервіс]          логи (Ctrl+C — вихід)
-  populate <TOKEN>       додати всі 15 тасків із прапорами та підказками в CTFd
+  populate <TOKEN>       додати/оновити всі 15 тасків, бали й порядок у CTFd
   check                  самоперевірка: проходить усі таски як гравець
   vpn-init               ініціалізація OpenVPN PKI (один раз)
   vpn-up                 запустити OpenVPN-контейнер

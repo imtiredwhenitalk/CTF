@@ -7,6 +7,13 @@ def init_db():
     conn = sqlite3.connect(':memory:', check_same_thread=False)
     conn.execute('CREATE TABLE users (id INTEGER, username TEXT, password TEXT)')
     conn.execute("INSERT INTO users VALUES (1, 'admin', 'CTF{bl1nd_sqli_w4f_byp4ss_m4st3r}')")
+    # TRAP / RED HERRING: rows below are archived from the 2022 directory.
+    # They are not the live password and are not accepted by the scoreboard.
+    conn.execute("INSERT INTO users VALUES (2, 'admin_legacy', 'CTF{bl1nd_sqli_l3g4cy_us3r}')")
+    conn.execute('CREATE TABLE legacy_users (id INTEGER, username TEXT, password TEXT)')
+    conn.execute("INSERT INTO legacy_users VALUES (1, 'admin', 'CTF{bl1nd_sqli_l3g4cy_t4bl3}')")
+    conn.execute('CREATE TABLE audit_notes (id INTEGER, note TEXT)')
+    conn.execute("INSERT INTO audit_notes VALUES (1, 'flag archived after rotation: CTF{bl1nd_sqli_aud1t_n0t3}')")
     return conn
 db = init_db()
 lock = threading.Lock()
@@ -19,6 +26,8 @@ BODY = '''
     <button class="btn primary" type="submit">Знайти</button>
   </form>
   {% if result %}<div class="alert {{ kind }}">{{ result }}</div>{% endif %}
+  <p class="muted" style="margin-top:1rem">Під час міграції старі записи збережено в
+  таблицях <code>legacy_users</code> та <code>audit_notes</code>.</p>
 </div></div>
 '''
 

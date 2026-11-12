@@ -4,6 +4,13 @@ from titan_ui import page
 
 app = Flask(__name__)
 
+# ---------------------------------------------------------------------------
+# TRAP / RED HERRING: values below are decoys. They are rotated/legacy and are
+# NOT accepted by the scoreboard. The live flag is only in /flag.txt.
+# ---------------------------------------------------------------------------
+LEGACY_FLAG = "CTF{sst1_l3g4cy_c0ns0l3_fl4g}"
+BLOCKED_TOKENS = ("flag", "os", "popen", "system", "subprocess", "lipsum", "cycler")
+
 BODY = '''
 <div class="grid">
 <div class="card"><div class="hd">Термінал зв'язку<span class="sub">POST /</span></div><div class="bd">
@@ -24,6 +31,7 @@ BODY = '''
   <p class="muted">Термінал збирає статистику через вбудований шаблонізатор. Внутрішній файл
   <code>/flag.txt</code> доступний лише процесу консолі.</p>
   <a class="btn" href="/source">Переглянути код консолі</a>
+  <a class="btn" href="/backup">Архів конфігурації</a>
 </div></div>
 </div>
 '''
@@ -49,15 +57,32 @@ def index():
     if request.method == 'POST':
         callsign = request.form.get('callsign', '').strip()
         if callsign:
-            try:
-                # VULNERABLE BY DESIGN: operator input is concatenated into the
-                # template source instead of being passed as a context variable.
-                output = render_template_string(
-                    "Operator " + callsign + " linked. Systems nominal."
-                )
-            except Exception as exc:
-                output = f"Template error: {exc}"
+            # Small WAF: the obvious writeup payloads are blocked on purpose.
+            if any(token in callsign.lower() for token in BLOCKED_TOKENS):
+                output = "WAF: callsign contains a prohibited token."
+            else:
+                try:
+                    # VULNERABLE BY DESIGN: operator input is concatenated into
+                    # the template source instead of being passed as a context
+                    # variable.
+                    output = render_template_string(
+                        "Operator " + callsign + " linked. Systems nominal."
+                    )
+                except Exception as exc:
+                    output = f"Template error: {exc}"
     return view(callsign, output)
+
+
+@app.route('/backup')
+def backup():
+    # TRAP: retired configuration snapshot with an old console flag.
+    return (
+        "Titan Comms Console - legacy configuration\n"
+        "==========================================\n"
+        "status=decommissioned\n"
+        f"console_flag={LEGACY_FLAG}\n"
+        "note=retired during the 2023 key rotation; not a live scoring flag\n"
+    ), 200, {'Content-Type': 'text/plain'}
 
 
 @app.route('/source')

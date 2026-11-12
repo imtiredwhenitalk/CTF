@@ -10,6 +10,19 @@ public_key = private_key.public_key()
 pem_pub = public_key.public_bytes(encoding=serialization.Encoding.PEM, format=serialization.PublicFormat.SubjectPublicKeyInfo).decode()
 FLAG = "CTF{jwt_4lg_c0nfus10n_byp4ss}"
 
+# ---------------------------------------------------------------------------
+# TRAP / RED HERRING. Nothing in this block is accepted by the scoreboard.
+# The real deployment rotated these values long ago; they are kept only so the
+# old staging clients keep booting.
+# ---------------------------------------------------------------------------
+LEGACY_FLAG = "CTF{jwt_hs256_st4g1ng_byp4ss}"
+DEV_SECRET = "titan-dev-secret-2023"
+_decoy_key = rsa.generate_private_key(public_exponent=65537, key_size=2048)
+decoy_pem = _decoy_key.public_key().public_bytes(
+    encoding=serialization.Encoding.PEM,
+    format=serialization.PublicFormat.SubjectPublicKeyInfo,
+).decode()
+
 BODY = '''
 <div class="card"><div class="hd">Доступ до API<span class="sub">GET /flag</span></div><div class="bd">
   <p>Адмін-панель приймає лише валідний JWT у заголовку <code>Authorization</code>. Токени підписує сервіс автентифікації Titan; публічний ключ відкритий.</p>
@@ -17,6 +30,9 @@ BODY = '''
     <a class="btn" href="/pub">Завантажити публічний ключ</a>
     <a class="btn primary" href="/flag">Відкрити адмін-панель</a>
   </div>
+  <p class="muted" style="margin-top:1rem">Службові сторінки:
+    <a href="/old_pub">/old_pub</a> (кеш ключа),
+    <a href="/dev/token">/dev/token</a> (staging helper).</p>
 </div></div>
 <div class="card"><div class="hd">Приклад запиту</div><div class="bd">
 <pre class="code plain">curl -H "Authorization: &lt;token&gt;" http://&lt;host&gt;/flag</pre>
@@ -49,6 +65,26 @@ def index():
 
 @app.route('/pub')
 def pub(): return pem_pub, 200, {'Content-Type': 'text/plain'}
+
+
+# Decoy endpoints: both look like a shortcut, both are dead ends.
+@app.route('/old_pub')
+def old_pub(): return decoy_pem, 200, {'Content-Type': 'text/plain'}
+
+
+@app.route('/dev/token')
+def dev_token():
+    token = jwt.encode({"role": "admin", "iss": "dev-staging"}, DEV_SECRET, algorithm="HS256")
+    return jsonify({
+        "token": token,
+        "note": "staging token; old signing key",
+        "legacy_flag": LEGACY_FLAG,
+    })
+
+
+@app.route('/robots.txt')
+def robots():
+    return "User-agent: *\nDisallow: /old_pub\nDisallow: /dev/token\n"
 
 @app.route('/flag')
 def flag():

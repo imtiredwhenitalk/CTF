@@ -19,3 +19,5 @@ def encrypt(data: bytes, seed: int) -> bytes:
     return bytes(res)
 
 # flag.enc = encrypt(flag.encode(), SECRET_SEED)   # 16-bit secret seed
+# TRAP: flag_backup.enc is an archived ciphertext with a different seed. It is
+# not the live artifact and its plaintext is not a valid scoreboard flag.

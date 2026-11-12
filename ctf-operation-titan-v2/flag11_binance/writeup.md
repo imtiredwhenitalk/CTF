@@ -41,6 +41,16 @@
    Сервер повертає прапор:
    `CTF{b1n4nc3_h4ck3d_c0ld_w4ll3t_st0l3n}`
 
+## Пастки (не справжній шлях)
+
+- У HTML є два ключі: `DEBUG_KEY` (справжній) і `BACKUP_KEY` (старий).
+  `BACKUP_KEY` розшифровує лише `legacy_encrypted_admin_key`.
+- `/api/v3/internal/legacy` віддає архівний debug-знімок. Ланцюжок
+  `BACKUP_KEY` → `BNC-ADM-00000-LEGACY` → `/api/v3/wallet/withdraw_legacy`
+  повертає `CTF{b1n4nc3_l3g4cy_d3bug_fl4g}` — табло його не приймає.
+- `robots.txt` тепер показує і `debug`, і `legacy`. Справжній прапор дає лише
+  `DEBUG_KEY` + `BNC-ADM-88912-SECRET` + `/api/v3/wallet/withdraw`.
+
 
 Як тепер виглядає проходження (Attack Path):
 

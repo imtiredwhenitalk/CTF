@@ -12,6 +12,18 @@ WALLET_ID = "CW-BTC-994100"
 # Прапор зашифровано: Base64( XOR(flag, "kopiko") )
 ENCRYPTED_FLAG_B64 = "KDs2EgleBVseClgwA1sTAlgLNAxABQ8wHFscBVgbNBwEWQdcBRI="
 
+# ---------------------------------------------------------------------------
+# TRAP / RED HERRING. The legacy debug route uses a retired key pair and its
+# withdrawal endpoint returns an old, non-scoring flag. The backup key in the
+# frontend only opens this decoy chain.
+# ---------------------------------------------------------------------------
+LEGACY_API_KEY = "BNC-ADM-00000-LEGACY"
+LEGACY_ENCRYPTED_ADMIN_KEY = (
+    "gAAAAABq9YSG-FJafaEZdKNDfsc8cqW8-Rq6OZi-opAyf04wbL6rKIOcqI2xH2rMoU65T_YBHeUvcCrLhyno"
+    "E42u-CnEtIc8D6kFhQwSUFPRmixvku54-Ys="
+)
+LEGACY_FLAG = "CTF{b1n4nc3_l3g4cy_d3bug_fl4g}"
+
 HTML_INDEX = '''
 <!DOCTYPE html>
 <html>
@@ -25,6 +37,7 @@ HTML_INDEX = '''
         .code { background: #000; padding: 15px; border-radius: 4px; font-family: monospace; color: #22c55e; text-align: left; margin-top: 20px; }
     </style>
     <!-- DEBUG_KEY: sLEdQ_xEehlbilF24xTA1as2Qnts26JjHaRS7F6csCQ= (Keep this safe, slurr!) -->
+    <!-- BACKUP_KEY: Q0G06ZI2o2Ery6UXDwm7QGb_ql8km8FmwWJWWYxMLu0= (old rotation backup, do not use) -->
 </head>
 <body>
     <div class="box">
@@ -47,7 +60,12 @@ def index():
 
 @app.route('/robots.txt')
 def robots():
-    return "User-agent: *\nDisallow: /api/v3/internal/debug\n"
+    return (
+        "User-agent: *\n"
+        "Disallow: /api/v3/internal/debug\n"
+        "Disallow: /api/v3/internal/legacy\n"
+        "Disallow: /api/v3/wallet/withdraw_legacy\n"
+    )
 
 @app.route('/api/v3/ticker')
 def ticker():
@@ -61,7 +79,23 @@ def debug():
         "encryption": "Fernet (AES-128-CBC)",
         "encrypted_admin_key": "gAAAAABq57o2KZnSXrJWzvTjEdFZEyCJ8YvZKMRpFjiRZAoOnSUxVPO3mRCeUErYq_RqU87FVG72ddxGAt2vIzmjE1BKmmLayzOP5WQMB8tGCOvEyn_VOrI=",
         "target_cold_wallet": WALLET_ID,
-        "hint": "Find the AES master key in the frontend, decrypt the admin_key, then sign the wallet ID before withdrawing."
+        "hint": "Find the AES master key in the frontend, decrypt the admin_key, then sign the wallet ID before withdrawing.",
+        # Decoy archive: opens with the BACKUP_KEY comment, not DEBUG_KEY.
+        "legacy_encrypted_admin_key": LEGACY_ENCRYPTED_ADMIN_KEY,
+        "legacy_endpoint": "/api/v3/internal/legacy",
+    })
+
+
+@app.route('/api/v3/internal/legacy')
+def legacy_debug():
+    # TRAP: old debug snapshot. The backup key in the frontend decrypts it to a
+    # revoked API key, which only works on the retired withdrawal endpoint.
+    return jsonify({
+        "status": "archived",
+        "encryption": "Fernet (AES-128-CBC)",
+        "encrypted_admin_key": LEGACY_ENCRYPTED_ADMIN_KEY,
+        "target_cold_wallet": "CW-BTC-000000",
+        "hint": "Legacy backup key is in the frontend comment. Withdrawal was moved to /api/v3/wallet/withdraw_legacy.",
     })
 
 @app.route('/api/v3/wallet/withdraw', methods=['POST'])
@@ -90,6 +124,21 @@ def withdraw():
         "flag_algorithm": "Base64 -> XOR (key: kopiko)",
         "encrypted_flag": ENCRYPTED_FLAG_B64
     })
+
+
+@app.route('/api/v3/wallet/withdraw_legacy', methods=['POST'])
+def withdraw_legacy():
+    # TRAP: retired endpoint. It accepts the old key and returns an old flag
+    # that the scoreboard does not accept.
+    if request.headers.get('X-API-Key') != LEGACY_API_KEY:
+        return jsonify({"error": "Unauthorized. Legacy key only."}), 401
+    return jsonify({
+        "success": True,
+        "message": "LEGACY FUNDS TRANSFERRED.",
+        "flag": LEGACY_FLAG,
+        "note": "archived result; revoked during key rotation",
+    })
+
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)

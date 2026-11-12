@@ -4,6 +4,14 @@ from titan_ui import page
 app = Flask(__name__)
 SECRET = b"titan_weak_key_123"
 
+# ---------------------------------------------------------------------------
+# TRAP / RED HERRING. These values belong to the retired 2021 mobile client and
+# to the migration test mirror; they are not the live scoring flag.
+# ---------------------------------------------------------------------------
+LEGACY_SECRET = b"titan_legacy_key_2021"
+LEGACY_FLAG = "CTF{p1ckl3_l3g4cy_m1rr0r_fl4g}"
+# The old mirror was /app/flag.txt. The live flag was moved to /flag.txt.
+
 BODY = '''
 <div class="card"><div class="hd">Синхронізація профілю<span class="sub">POST /upload</span></div><div class="bd">
   <form method="POST" action="/upload">
